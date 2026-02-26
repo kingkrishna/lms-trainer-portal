@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accounting Courses – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://db.onlinewebfonts.com/c/eb6b0dff01f56021ee7bbfd0328b8b51?family=ITC+Tempus+Sans+W02+Regular" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/courses.css">
+</head>
+<body class="page-courses">
+  <header class="courses-header">
+    <div class="container">
+      <div class="courses-header-inner">
+        <a class="courses-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="courses-nav">
+          <a href="index.html">Home</a>
+          <a href="courses.html" class="active">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html">Profile</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="courses-main">
+    <!-- Hero banner -->
+    <section class="courses-banner">
+      <div class="courses-banner-bg"></div>
+      <div class="container position-relative">
+        <div class="courses-banner-inner">
+          <span class="courses-banner-badge">Accounting & Finance</span>
+          <h1 class="courses-banner-title">Accounting courses for your career</h1>
+          <p class="courses-banner-text">From fundamentals to tax, audit, and professional exams. Fixed prices, verified trainers. Enroll after payment and learn with live sessions.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container courses-body">
+      <!-- Toolbar -->
+      <div class="courses-toolbar">
+        <div class="courses-toolbar-left">
+          <span class="courses-count" id="courseCount">All courses</span>
+        </div>
+        <div class="courses-toolbar-right">
+          <div class="courses-search-wrap">
+            <input type="text" class="courses-search" id="courseSearch" placeholder="Search courses..." aria-label="Search courses">
+          </div>
+        </div>
+      </div>
+
+      <!-- School tabs: Accounting School | Tax School | Technicial Courses -->
+      <div class="courses-tabs" role="tablist" aria-label="Course school">
+        <button type="button" class="courses-tab active" data-school="accounting" role="tab" aria-selected="true" id="tabAccountingSchool">
+          <span class="courses-tab-icon">📒</span>
+          <span class="courses-tab-label">Accounting School</span>
+        </button>
+        <button type="button" class="courses-tab" data-school="tax" role="tab" aria-selected="false" id="tabTaxSchool">
+          <span class="courses-tab-icon">🧾</span>
+          <span class="courses-tab-label">Tax School</span>
+        </button>
+        <button type="button" class="courses-tab" data-school="technical" role="tab" aria-selected="false" id="tabTechnicalSchool">
+          <span class="courses-tab-icon">💻</span>
+          <span class="courses-tab-label">Technicial Courses</span>
+        </button>
+      </div>
+
+      <!-- Course type boxes -->
+      <div class="courses-package-tabs" role="tablist" aria-label="Course type">
+        <button type="button" class="courses-package-tab active" data-package="individual" aria-selected="true">Individual Courses</button>
+        <button type="button" class="courses-package-tab" data-package="combo" aria-selected="false">Combo Courses</button>
+        <button type="button" class="courses-package-tab" data-package="package" aria-selected="false">Total Course Package</button>
+      </div>
+
+      <!-- Courses -->
+      <section class="courses-section" id="sectionCourses">
+        <h2 class="courses-section-title" id="coursesSectionTitle">Accounting School</h2>
+        <p class="courses-section-desc" id="coursesSectionDesc">Choose individual, combo, or full package options.</p>
+        <div id="courseList" class="courses-grid"></div>
+        <div id="coursesSectionEmpty" class="courses-section-empty d-none">No courses found for this selection.</div>
+      </section>
+
+      <!-- Empty state (hidden when there are cards) -->
+      <div id="coursesEmpty" class="courses-empty d-none">
+        <div class="courses-empty-icon">📒</div>
+        <h3>No courses yet</h3>
+        <p>Courses will appear here once added by the admin. Check back soon.</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="coursesError" class="courses-error d-none">
+        <p>Could not load courses. Ensure the API is running.</p>
+        <button type="button" class="btn btn-courses-retry" id="btnRetry">Try again</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script src="js/nav-connect.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>

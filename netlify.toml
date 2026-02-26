@@ -1,0 +1,79 @@
+[build]
+  publish = "public"
+  command = "echo 'Build OK'"
+
+[functions]
+  node_bundler = "esbuild"
+
+# API and health – proxy to serverless function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/courses"
+  to = "/courses.html"
+  status = 200
+
+[[redirects]]
+  from = "/trainers"
+  to = "/trainers.html"
+  status = 200
+
+[[redirects]]
+  from = "/jobs"
+  to = "/jobs.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/candidates"
+  to = "/candidates.html"
+  status = 200
+
+[[redirects]]
+  from = "/candidate-process"
+  to = "/candidate-process.html"
+  status = 200
+
+[[redirects]]
+  from = "/course-detail"
+  to = "/course-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/job-detail"
+  to = "/job-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/trainer-detail"
+  to = "/trainer-detail.html"
+  status = 200

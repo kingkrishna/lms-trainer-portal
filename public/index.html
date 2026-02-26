@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision Connects – Learn, Train, Get Hired</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://db.onlinewebfonts.com/c/eb6b0dff01f56021ee7bbfd0328b8b51?family=ITC+Tempus+Sans+W02+Regular" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body class="home-page">
+  <header class="home-header">
+    <nav class="navbar navbar-expand-lg home-nav">
+      <div class="container">
+        <a class="navbar-brand home-brand" href="index.html">
+          <img src="images/logo.svg" alt="Vision Connects" class="home-brand-logo" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+            <li class="nav-item"><a class="nav-link" href="trainers.html">Trainers</a></li>
+            <li class="nav-item" data-hide-for="trainer"><a class="nav-link" href="jobs.html">Jobs</a></li>
+            <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          </ul>
+          <ul class="navbar-nav nav-auth" id="navAuth">
+            <li class="nav-item"><a class="nav-link nav-link-login" href="login.html">Log in</a></li>
+            <li class="nav-item"><a class="nav-link nav-link-signup" href="register.html">Sign up</a></li>
+          </ul>
+          <ul class="navbar-nav nav-user d-none" id="navUser">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle nav-link-account" href="#" data-bs-toggle="dropdown" id="userMenuLabel">Account</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" id="btnLogout">Log out</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="home-top-steps-wrap" aria-label="Platform steps">
+      <div class="container"></div>
+          <div class="home-process-track">
+            <article class="home-process-step home-process-step-1">
+              <span class="home-process-step-no">Step 3</span>
+              <h3 class="home-process-step-label">Get Placed</h3>
+              <p class="home-process-step-sub">Apply for jobs and move into your role.</p>
+            </article>
+            <span class="home-process-arrow" aria-hidden="true">←</span>
+            <article class="home-process-step home-process-step-2">
+              <span class="home-process-step-no">Step 2</span>
+              <h3 class="home-process-step-label">Train</h3>
+              <p class="home-process-step-sub">Practice with trainers and live sessions.</p>
+            </article>
+            <span class="home-process-arrow" aria-hidden="true">←</span>
+            <article class="home-process-step home-process-step-3">
+              <span class="home-process-step-no">Step 1</span>
+              <h3 class="home-process-step-label">Learn</h3>
+              <p class="home-process-step-sub">Choose your course and build core skills.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero: interactive role + content -->
+    <section class="home-hero">
+      <div class="hero-bg-blob hero-bg-blob-1"></div>
+      <div class="hero-bg-blob hero-bg-blob-2"></div>
+      <div class="container">
+        <div class="hero-content">
+          <p class="hero-badge">Accounting • Trainers • Careers</p>
+          <h1 class="hero-headline">One platform to learn, train, and get hired.</h1>
+          <p class="hero-sub">Vision Connects brings together accounting courses, verified trainers, and job opportunities.</p>
+
+          <!-- Interactive role selector (unique to home) -->
+          <div class="hero-role-wrap">
+            <span class="hero-role-label">I want to</span>
+            <div class="hero-role-tabs" role="tablist">
+              <button type="button" class="hero-role-tab active" data-role="learn" aria-selected="true">Learn</button>
+              <button type="button" class="hero-role-tab" data-role="teach" aria-selected="false">Teach</button>
+              <button type="button" class="hero-role-tab" data-role="hire" aria-selected="false">Hire</button>
+            </div>
+            <p class="hero-role-desc" id="heroRoleDesc">Browse courses, choose a trainer, and enroll after secure payment. Fixed prices—no surprises.</p>
+            <a href="courses.html" class="btn btn-hero-primary" id="heroRoleCta">Explore courses</a>
+          </div>
+        </div>
+        <div class="hero-cards">
+          <a href="courses.html" class="hero-module hero-module-courses">
+            <span class="hero-module-icon">📒</span>
+            <span class="hero-module-label">Courses</span>
+            <span class="hero-module-desc">Accounting & finance</span>
+          </a>
+          <a href="trainers.html" class="hero-module hero-module-trainers">                                 
+            <span class="hero-module-icon">👤</span>
+            <span class="hero-module-label">Trainers</span>
+            <span class="hero-module-desc">Expert professionals</span>
+          </a>
+          <a href="jobs.html" class="hero-module hero-module-jobs" data-hide-for="trainer">
+            <span class="hero-module-icon">💼</span>
+            <span class="hero-module-label">Jobs</span>
+            <span class="hero-module-desc">Verified recruiters</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Animated stats (unique to home) -->
+    <section class="home-stats">
+      <div class="container">
+        <div class="stats-inner">
+          <div class="stat-item">
+            <span class="stat-num" data-target="11">0</span>
+            <span class="stat-suffix">+</span>
+            <span class="stat-label">Courses</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="6">0</span>
+            <span class="stat-label">Trainers</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item" data-hide-for="trainer">
+            <span class="stat-num" data-target="7">0</span>
+            <span class="stat-suffix">+</span>
+            <span class="stat-label">Jobs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="home-trust">
+      <div class="container">
+        <div class="trust-inner">
+          <span class="trust-item">✓ Verified trainers</span>
+          <span class="trust-item">✓ Fixed course prices</span>
+          <span class="trust-item">✓ Secure payments</span>
+          <span class="trust-item">✓ Job portal for students</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works (unique 3-step) -->
+    <section class="home-how">
+      <div class="container">
+        <h2 class="how-title">How it works</h2>
+        <p class="how-sub">Three steps to get started. Simple and secure.</p>
+        <div class="how-steps">
+          <div class="how-step">
+            <span class="how-step-num">1</span>
+            <h3 class="how-step-title">Choose</h3>
+            <p class="how-step-desc">Pick a course and a trainer. Prices are fixed by the platform.</p>
+          </div>
+          <span class="how-step-arrow" aria-hidden="true">→</span>
+          <div class="how-step">
+            <span class="how-step-num">2</span>
+            <h3 class="how-step-title">Pay</h3>
+            <p class="how-step-desc">Pay securely. Access is granted only after verified payment.</p>
+          </div>
+          <span class="how-step-arrow" aria-hidden="true">→</span>
+          <div class="how-step">
+            <span class="how-step-num">3</span>
+            <h3 class="how-step-title">Learn & grow</h3>
+            <p class="how-step-desc">Access materials, live sessions, and apply for jobs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What you can do: cards with stagger animation -->
+    <section class="home-sections">
+      <div class="container">
+        <h2 class="sections-title">What you can do</h2>
+        <p class="sections-sub">Learn, choose a trainer, and apply for jobs—all in one place.</p>
+        <div class="row g-4 section-cards-row">
+          <div class="col-md-4">
+            <a href="courses.html" class="section-card section-card-courses">
+              <span class="section-card-num">01</span>
+              <h3 class="section-card-title">Courses</h3>
+              <p class="section-card-desc">Accounting courses with fixed prices. Enroll after payment and access materials and live sessions.</p>
+              <span class="section-card-link">View courses →</span>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="trainers.html" class="section-card section-card-trainers">
+              <span class="section-card-num">02</span>
+              <h3 class="section-card-title">Trainers</h3>
+              <p class="section-card-desc">Choose from approved trainers for each course. Learn with live sessions and structured support.</p>
+              <span class="section-card-link">Find trainers →</span>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="jobs.html" class="section-card section-card-jobs" data-hide-for="trainer">
+              <span class="section-card-num">03</span>
+              <h3 class="section-card-title">Jobs</h3>
+              <p class="section-card-desc">Apply to jobs from verified recruiters. Build your profile and connect with employers.</p>
+              <span class="section-card-link">Browse jobs →</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="home-cta" id="homeCta">
+      <div class="container">
+        <div class="cta-box">
+          <h2 class="cta-heading">Ready to start?</h2>
+          <p class="cta-desc">Create a free account as a student, trainer, or recruiter.</p>
+          <a href="register.html" class="btn btn-cta-main">Sign up free</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="home-footer site-footer">
+    <div class="container">
+      <div class="footer-top footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="login.html">Log in</a>
+          <a href="register.html">Sign up</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace &amp; job portal</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script>
+    // LMS link: redirect logged-in users to their dashboard (courses are there)
+    (function () {
+      if (typeof window.api !== 'undefined' && window.api.isLoggedIn && window.api.isLoggedIn()) {
+        window.location.replace('dashboard.html');
+      }
+    })();
+  </script>
+  <script src="js/home.js"></script>
+</body>
+</html>

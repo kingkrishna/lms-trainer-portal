@@ -1,0 +1,168 @@
+/* Register page – unique role-cards + form (no navbar) */
+
+body.page-register {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--bs-body-font-family);
+  background: var(--vc-surface);
+}
+
+.register-header {
+  background: #fff;
+  border-bottom: 1px solid var(--vc-border);
+  padding: 1rem 0;
+}
+
+.register-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.register-brand {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--vc-text);
+  text-decoration: none;
+}
+.register-brand:hover { color: var(--vc-primary); }
+
+.register-login {
+  font-weight: 600;
+  color: var(--vc-primary);
+  text-decoration: none;
+}
+.register-login:hover { color: var(--vc-primary-dark); }
+
+.register-main {
+  padding: 2.5rem 0 4rem;
+}
+
+.register-head {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vc-text);
+  margin-bottom: 0.5rem;
+}
+
+.register-sub {
+  color: var(--vc-text-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.register-card {
+  max-width: 560px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  border: 1px solid var(--vc-border);
+}
+
+.register-role-row .form-label { font-weight: 600; color: var(--vc-text); }
+
+.role-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 576px) {
+  .role-options { grid-template-columns: 1fr; }
+}
+
+.role-option {
+  margin: 0;
+  cursor: pointer;
+}
+
+.role-option input { display: none; }
+
+.role-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.75rem;
+  border: 2px solid var(--vc-border);
+  border-radius: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.role-option input:checked + .role-box {
+  border-color: var(--vc-primary);
+  background: var(--vc-accent-bg);
+}
+
+.role-option:hover .role-box { border-color: var(--vc-accent); }
+
+.role-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.role-name {
+  font-weight: 700;
+  color: var(--vc-text);
+  font-size: 1rem;
+}
+
+.role-desc {
+  font-size: 0.75rem;
+  color: var(--vc-text-muted);
+  margin-top: 0.15rem;
+}
+
+.register-card .form-label { font-weight: 600; color: var(--vc-text); }
+.register-card .form-control {
+  border-radius: 10px;
+  border: 1px solid var(--vc-border);
+  padding: 0.6rem 0.75rem;
+}
+.register-card .form-control:focus {
+  border-color: var(--vc-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vc-primary) 20%, transparent);
+}
+
+.btn-register-submit {
+  background: var(--vc-gradient);
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 14px rgba(32, 191, 155, 0.35);
+}
+.btn-register-submit:hover { opacity: 0.95; color: #fff; box-shadow: 0 6px 20px rgba(32, 191, 155, 0.45); }
+
+.register-footer-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+}
+.register-footer-text a { color: var(--vc-primary); font-weight: 600; }
+
+.register-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.register-divider::before,
+.register-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--vc-border);
+}
+.register-divider span {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+}
+

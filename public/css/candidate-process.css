@@ -1,0 +1,253 @@
+/* Candidate enrollment process – two steps, schedule, payment */
+
+.page-candidate-process .candidate-process-main {
+  padding: 2rem 0 4rem;
+}
+
+.candidate-process-breadcrumb {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+.candidate-process-breadcrumb a {
+  color: var(--vc-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+.candidate-process-breadcrumb a:hover { color: var(--vc-primary); }
+.breadcrumb-sep {
+  color: var(--vc-border);
+  margin: 0 0.35rem;
+}
+.candidate-process-breadcrumb span:last-child {
+  color: var(--vc-text);
+  font-weight: 600;
+}
+
+.candidate-process-loading {
+  color: var(--vc-text-muted);
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Summary card */
+.candidate-process-summary {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.candidate-process-summary h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin-bottom: 0.75rem;
+}
+.candidate-process-summary p {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0;
+}
+
+/* Two steps layout */
+.candidate-process-steps {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.candidate-step {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.candidate-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--vc-accent-bg);
+  border-bottom: 1px solid var(--vc-border);
+}
+.candidate-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--vc-primary);
+  border-radius: 10px;
+}
+.candidate-step-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin: 0;
+}
+.candidate-step-body {
+  padding: 1.5rem;
+}
+
+/* No group discussion notice (in one-on-one section) */
+.candidate-no-group {
+  padding: 1rem 1.25rem;
+  background: var(--vc-surface);
+  border: 1px dashed var(--vc-border);
+  border-radius: 10px;
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin-top: 1rem;
+}
+.candidate-no-group strong {
+  color: var(--vc-text);
+}
+
+.candidate-process-summary .form-select {
+  border: 1px solid var(--vc-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  color: var(--vc-text);
+}
+.candidate-process-summary .form-select:focus {
+  border-color: var(--vc-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--vc-primary) 20%, transparent);
+}
+
+/* Schedule selection */
+.candidate-schedule-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vc-text);
+  margin-bottom: 0.75rem;
+}
+.candidate-schedule-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.candidate-schedule-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--vc-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.candidate-schedule-option:hover {
+  border-color: var(--vc-accent);
+  background: var(--vc-accent-bg);
+}
+.candidate-schedule-option input {
+  margin: 0;
+}
+.candidate-schedule-option input:checked + .candidate-schedule-label-inline,
+.candidate-schedule-option:has(input:checked) {
+  border-color: var(--vc-primary);
+  background: var(--vc-accent-bg);
+}
+.candidate-schedule-label-inline {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--vc-text);
+}
+
+/* Payment options */
+.candidate-payment-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--vc-border);
+}
+.candidate-payment-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin-bottom: 1rem;
+}
+.candidate-payment-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.candidate-payment-option {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 2px solid var(--vc-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.candidate-payment-option:hover {
+  border-color: var(--vc-accent);
+  background: var(--vc-accent-bg);
+}
+.candidate-payment-option input {
+  margin-top: 0.2rem;
+}
+.candidate-payment-option:has(input:checked) {
+  border-color: var(--vc-primary);
+  background: var(--vc-accent-bg);
+}
+.candidate-payment-option-body h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin: 0 0 0.25rem 0;
+}
+.candidate-payment-option-body p {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0;
+}
+
+/* Submit */
+.candidate-process-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.btn-candidate-proceed {
+  background: var(--vc-primary);
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-candidate-proceed:hover {
+  background: var(--vc-primary-dark);
+  color: #fff;
+}
+.btn-candidate-back {
+  background: #fff;
+  color: var(--vc-primary);
+  border: 1px solid var(--vc-border);
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  transition: background 0.2s;
+}
+.btn-candidate-back:hover {
+  background: var(--vc-surface);
+  color: var(--vc-text);
+}
+

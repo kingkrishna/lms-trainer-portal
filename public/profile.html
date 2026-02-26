@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile – Vision Connects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body class="page-profile">
+  <header class="profile-header">
+    <div class="container">
+      <div class="profile-header-inner">
+        <a class="profile-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="profile-nav">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html" class="profile-nav-active">Profile</a>
+          <a href="#" id="btnLogout" class="profile-logout">Log out</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="profile-main">
+    <div class="container">
+      <h1 class="profile-title">My Profile</h1>
+      <p class="profile-sub">Update your profile information</p>
+
+      <div id="profileError" class="alert alert-danger d-none"></div>
+      <div id="profileSuccess" class="alert alert-success d-none"></div>
+
+      <div class="profile-card">
+        <form id="profileForm">
+          <div class="profile-photo-row">
+            <div class="profile-photo-wrap">
+              <img id="profileImagePreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Profile" class="profile-photo" />
+              <label class="profile-photo-upload">
+                <input type="file" id="profileImageInput" accept="image/jpeg,image/png,image/webp" />
+                <span class="profile-photo-btn">Change photo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="profileName">Full name</label>
+              <input type="text" class="form-control" id="profileName" name="full_name" placeholder="Your name" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="profileEmail">Email</label>
+              <input type="email" class="form-control" id="profileEmail" readonly disabled placeholder="you@example.com" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="profilePhone">Mobile number</label>
+              <input type="tel" class="form-control" id="profilePhone" name="phone" placeholder="+1 234 567 8900" />
+            </div>
+            <div class="col-md-6" id="profileCompanyGroup">
+              <label class="form-label" for="profileCompany">Company name</label>
+              <input type="text" class="form-control" id="profileCompany" name="company_name" placeholder="Company" />
+            </div>
+            <div class="col-md-6" id="profileContactGroup">
+              <label class="form-label" for="profileContact">Contact person</label>
+              <input type="text" class="form-control" id="profileContact" name="contact_person" placeholder="Name" />
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="profileAddress">Address</label>
+              <textarea class="form-control" id="profileAddress" name="address" rows="2" placeholder="Street, city, state, PIN"></textarea>
+            </div>
+            <div class="col-12" id="profileBioGroup">
+              <label class="form-label" for="profileBio">Bio</label>
+              <textarea class="form-control" id="profileBio" name="bio" rows="3" placeholder="Short bio for your profile"></textarea>
+            </div>
+            <div class="col-12 d-none" id="profileSkillsGroup">
+              <label class="form-label" for="profileSkills">Skills (comma-separated)</label>
+              <input type="text" class="form-control" id="profileSkills" name="skills" placeholder="e.g. Tally, GST, Excel, Accounting" />
+              <small class="text-muted">Recruiters search candidates by these skills. Add relevant skills to get discovered.</small>
+            </div>
+            <div class="col-12 d-none" id="profileResumeGroup">
+              <label class="form-label">Resume / CV</label>
+              <input type="file" class="form-control" id="profileResume" accept=".pdf,.doc,.docx" />
+              <small class="text-muted">PDF or Word. Recruiters can download your resume when they find you in search.</small>
+            </div>
+          </div>
+
+          <div class="profile-actions">
+            <button type="submit" class="btn btn-primary" id="btnSave">Save changes</button>
+            <a href="dashboard.html" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script>
+    const errEl = document.getElementById('profileError');
+    const successEl = document.getElementById('profileSuccess');
+    const form = document.getElementById('profileForm');
+    const imgPreview = document.getElementById('profileImagePreview');
+    const imgInput = document.getElementById('profileImageInput');
+    const companyGroup = document.getElementById('profileCompanyGroup');
+    const contactGroup = document.getElementById('profileContactGroup');
+    const bioGroup = document.getElementById('profileBioGroup');
+    const skillsGroup = document.getElementById('profileSkillsGroup');
+    const resumeGroup = document.getElementById('profileResumeGroup');
+
+    function showMsg(el, msg, isError) {
+      errEl.classList.add('d-none');
+      successEl.classList.add('d-none');
+      el.textContent = msg;
+      el.classList.remove('d-none');
+    }
+
+    function loadProfile() {
+      let demo = null;
+      try {
+        demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null');
+      } catch (_) {}
+
+      if (demo && demo.email) {
+        document.getElementById('profileName').value = demo.full_name || '';
+        document.getElementById('profileEmail').value = demo.email || '';
+        document.getElementById('profilePhone').value = '';
+        document.getElementById('profileAddress').value = '';
+        document.getElementById('profileCompany').value = demo.company_name || '';
+        document.getElementById('profileContact').value = '';
+        document.getElementById('profileBio').value = '';
+        document.getElementById('profileSkills').value = (demo.skills && Array.isArray(demo.skills) ? demo.skills.join(', ') : (demo.skills || ''));
+        toggleRoleFields(demo.role || 'student');
+        return;
+      }
+
+      window.api.get('/auth/me').then(function (data) {
+        const u = data.user;
+        const p = data.profile || {};
+        document.getElementById('profileEmail').value = u.email || '';
+        document.getElementById('profileName').value = p.full_name || p.contact_person || '';
+        document.getElementById('profilePhone').value = p.phone || '';
+        document.getElementById('profileAddress').value = p.address || '';
+        document.getElementById('profileCompany').value = p.company_name || '';
+        document.getElementById('profileContact').value = p.contact_person || '';
+        document.getElementById('profileBio').value = p.bio || '';
+        const skillsVal = p.skills ? (Array.isArray(p.skills) ? p.skills.join(', ') : (typeof p.skills === 'string' ? (p.skills.startsWith('[') ? JSON.parse(p.skills || '[]').join(', ') : p.skills) : '')) : '';
+        document.getElementById('profileSkills').value = skillsVal;
+        if (p.profile_image_url) {
+          imgPreview.src = p.profile_image_url;
+          form.dataset.profileImage = p.profile_image_url;
+        }
+        if (p.resume_url) form.dataset.resumeUrl = p.resume_url;
+        toggleRoleFields(u.role);
+      }).catch(function () {
+        showMsg(errEl, 'Session expired. Please log in again.', true);
+        setTimeout(function () { window.location.href = 'login.html'; }, 1500);
+      });
+    }
+
+    function toggleRoleFields(role) {
+      const isRecruiter = role === 'recruiter';
+      const isTrainer = role === 'trainer';
+      const isStudent = role === 'student';
+      companyGroup.classList.toggle('d-none', !isRecruiter);
+      contactGroup.classList.toggle('d-none', !isRecruiter);
+      bioGroup.classList.toggle('d-none', !isTrainer);
+      skillsGroup.classList.toggle('d-none', !isStudent);
+      resumeGroup.classList.toggle('d-none', !isStudent);
+    }
+
+    document.getElementById('profileResume').addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) form.dataset.resumeUrl = 'uploaded';
+    });
+
+    imgInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        let dataUrl = reader.result;
+        if (dataUrl.length > 300000) {
+          const img = new Image();
+          img.onload = function () {
+            const c = document.createElement('canvas');
+            const max = 400;
+            c.width = img.width > img.height ? max : (img.width / img.height) * max;
+            c.height = img.height > img.width ? max : (img.height / img.width) * max;
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            dataUrl = c.toDataURL('image/jpeg', 0.8);
+            form.dataset.profileImage = dataUrl;
+            imgPreview.src = dataUrl;
+            imgPreview.style.display = 'block';
+          };
+          img.src = dataUrl;
+        } else {
+          form.dataset.profileImage = dataUrl;
+          imgPreview.src = dataUrl;
+          imgPreview.style.display = 'block';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      errEl.classList.add('d-none');
+      successEl.classList.add('d-none');
+
+      const body = {
+        full_name: document.getElementById('profileName').value.trim(),
+        phone: document.getElementById('profilePhone').value.trim() || undefined,
+        address: document.getElementById('profileAddress').value.trim() || undefined,
+        profile_image_url: form.dataset.profileImage || undefined,
+      };
+      const skillsInput = document.getElementById('profileSkills').value.trim();
+      if (skillsInput) {
+        body.skills = skillsInput.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+      }
+      if (form.dataset.resumeUrl) body.resume_url = form.dataset.resumeUrl;
+      if (document.getElementById('profileCompanyGroup').classList.contains('d-none') === false) {
+        body.company_name = document.getElementById('profileCompany').value.trim();
+        body.contact_person = document.getElementById('profileContact').value.trim();
+      }
+      if (document.getElementById('profileBioGroup').classList.contains('d-none') === false) {
+        body.bio = document.getElementById('profileBio').value.trim() || undefined;
+      }
+
+      let demo = null;
+      try {
+        demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null');
+      } catch (_) {}
+
+      if (demo && demo.email) {
+        demo.full_name = body.full_name || demo.full_name;
+        demo.phone = body.phone;
+        demo.address = body.address;
+        demo.company_name = body.company_name || demo.company_name;
+        if (body.skills) demo.skills = body.skills;
+        if (body.resume_url) demo.resume_url = body.resume_url;
+        try { localStorage.setItem('lms_demo_user', JSON.stringify(demo)); } catch (_) {}
+        showMsg(successEl, 'Profile saved (demo mode).', false);
+        return;
+      }
+
+      try {
+        await window.api.patch('/auth/profile', body);
+        showMsg(successEl, 'Profile updated successfully.', false);
+      } catch (err) {
+        showMsg(errEl, err.error || 'Failed to update profile', true);
+      }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', async function (e) {
+      e.preventDefault();
+      try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
+      try { await window.api.post('/auth/logout'); } catch (_) {}
+      window.location.href = 'index.html';
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

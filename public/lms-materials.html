@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Materials – Vision Connects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/courses.css">
+</head>
+<body class="page-courses">
+  <header class="courses-header">
+    <div class="container">
+      <div class="courses-header-inner">
+        <a class="courses-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="courses-nav">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+          <a href="profile.html">Profile</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <nav class="mb-3">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="mx-2">/</span>
+      <a href="courses.html">Courses</a>
+      <span class="mx-2">/</span>
+      <span id="breadcrumbCourse">Materials</span>
+    </nav>
+    <h1 class="h3 mb-3" id="pageTitle">Course materials</h1>
+    <div id="materialsList" class="list-group">
+      <p class="text-muted">Loading...</p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/nav-connect.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+      const listEl = document.getElementById('materialsList');
+      const titleEl = document.getElementById('pageTitle');
+      const breadcrumbEl = document.getElementById('breadcrumbCourse');
+
+      if (!slug) {
+        listEl.innerHTML = '<p class="text-muted">No course selected. <a href="courses.html">Browse courses</a></p>';
+        return;
+      }
+
+      function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+
+      window.api.get('/lms/courses/' + encodeURIComponent(slug) + '/materials')
+        .then(function (data) {
+          const materials = data.materials || [];
+          breadcrumbEl.textContent = slug.replace(/-/g, ' ');
+          if (materials.length === 0) {
+            listEl.innerHTML = '<p class="text-muted">No materials added yet. Check back soon.</p>';
+            return;
+          }
+          listEl.innerHTML = materials.map(function (m) {
+            const icon = m.type === 'video' ? '🎬' : m.type === 'document' ? '📄' : m.type === 'link' ? '🔗' : '📅';
+            const url = m.url_or_content || '#';
+            const isLink = url.startsWith('http') || m.type === 'link';
+            return '<div class="list-group-item d-flex align-items-center">' +
+              '<span class="me-3">' + icon + '</span>' +
+              '<div class="flex-grow-1"><strong>' + escapeHtml(m.title) + '</strong> <span class="badge bg-secondary ms-2">' + escapeHtml(m.type) + '</span></div>' +
+              (isLink ? '<a href="' + escapeHtml(url) + '" target="_blank" class="btn btn-sm btn-outline-primary">Open</a>' : '<span class="text-muted">' + escapeHtml(url) + '</span>') +
+              '</div>';
+          }).join('');
+        })
+        .catch(function () {
+          listEl.innerHTML = '<p class="text-muted">Could not load materials. <a href="dashboard.html">Back to dashboard</a></p>';
+        });
+    })();
+  </script>
+</body>
+</html>

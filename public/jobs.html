@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobs – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://db.onlinewebfonts.com/c/eb6b0dff01f56021ee7bbfd0328b8b51?family=ITC+Tempus+Sans+W02+Regular" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/jobs.css">
+</head>
+<body class="page-jobs">
+  <header class="jobs-header">
+    <div class="container">
+      <div class="jobs-header-inner">
+        <a class="jobs-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="jobs-nav">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" class="active">Jobs</a>
+          <a href="profile.html">Profile</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="jobs-main">
+    <!-- Hero banner -->
+    <section class="jobs-banner">
+      <div class="jobs-banner-bg"></div>
+      <div class="container position-relative">
+        <div class="jobs-banner-inner">
+          <span class="jobs-banner-badge">Career</span>
+          <h1 class="jobs-banner-title">Find your next role</h1>
+          <p class="jobs-banner-text">Accounting and finance jobs from verified recruiters. Apply as a student, get shortlisted, and connect with employers on one platform.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container jobs-body">
+      <!-- View tabs -->
+      <div class="jobs-view-tabs" role="tablist" aria-label="Jobs and students views">
+        <button type="button" class="jobs-view-tab active" id="tabJobs" data-view="jobs" aria-selected="true">💼 Jobs</button>
+        <button type="button" class="jobs-view-tab" id="tabStudents" data-view="students" aria-selected="false">🎓 Students</button>
+      </div>
+
+      <section id="jobsPanel">
+        <!-- Toolbar -->
+        <div class="jobs-toolbar">
+          <div class="jobs-toolbar-left">
+            <span class="jobs-count" id="jobCount">All jobs</span>
+          </div>
+          <div class="jobs-toolbar-right">
+            <div class="jobs-search-wrap">
+              <input type="text" class="jobs-search" id="jobSearch" placeholder="Search by title, company, or location..." aria-label="Search jobs">
+            </div>
+          </div>
+        </div>
+
+        <!-- Job cards grid -->
+        <div id="jobList" class="jobs-grid"></div>
+
+        <!-- Empty state -->
+        <div id="jobsEmpty" class="jobs-empty d-none">
+          <div class="jobs-empty-icon">💼</div>
+          <h3>No jobs found</h3>
+          <p>Try a different search or check back later for new openings.</p>
+        </div>
+      </section>
+
+      <!-- Students waiting for jobs -->
+      <section class="students-waiting d-none" id="studentsPanel" aria-labelledby="studentsWaitingTitle">
+        <div class="students-waiting-head">
+          <div>
+            <h2 class="students-waiting-title" id="studentsWaitingTitle">Students waiting for jobs</h2>
+            <p class="students-waiting-sub">Ranked by priority and grade to help recruiters shortlist quickly.</p>
+          </div>
+          <span class="students-waiting-count" id="studentsWaitingCount">0 students</span>
+        </div>
+        <div class="students-waiting-filters">
+          <select id="studentTechFilter" class="students-filter-select" aria-label="Filter by technology">
+            <option value="all">All technologies</option>
+          </select>
+          <select id="studentPriorityFilter" class="students-filter-select" aria-label="Filter by priority">
+            <option value="all">All priorities</option>
+            <option value="high">High priority</option>
+            <option value="medium">Medium priority</option>
+            <option value="low">Low priority</option>
+          </select>
+          <button type="button" class="btn students-filter-apply" id="applyStudentFilter">Apply filter</button>
+        </div>
+        <div id="studentsWaitingList" class="students-waiting-grid"></div>
+        <div id="studentsWaitingEmpty" class="students-waiting-empty d-none">
+          <p>No students match this filter right now.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script src="js/nav-connect.js"></script>
+  <script>
+    (function(){
+      var demo = null;
+      try { demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null'); } catch (_) {}
+      if (demo && demo.role === 'trainer') { window.location.replace('dashboard.html'); return; }
+      if (window.api && window.api.isLoggedIn()) {
+        window.api.get('/auth/me').then(function(d){ if(d.user&&d.user.role==='trainer') window.location.replace('dashboard.html'); }).catch(function(){});
+      }
+    })();
+  </script>
+  <script src="js/jobs.js"></script>
+</body>
+</html>

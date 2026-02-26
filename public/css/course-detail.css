@@ -1,0 +1,108 @@
+/* Course detail page (single course view) */
+
+.page-course-detail .course-detail-main {
+  padding: 2rem 0 4rem;
+}
+
+.course-detail-breadcrumb {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+.course-detail-breadcrumb a {
+  color: var(--vc-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+.course-detail-breadcrumb a:hover { color: var(--vc-primary); }
+.breadcrumb-sep {
+  color: var(--vc-border);
+  margin: 0 0.35rem;
+}
+.course-detail-breadcrumb span:last-child {
+  color: var(--vc-text);
+  font-weight: 600;
+}
+
+.course-detail-loading {
+  color: var(--vc-text-muted);
+  padding: 2rem;
+  text-align: center;
+}
+
+.course-detail-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--vc-border);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.course-detail-hero {
+  height: 200px;
+  background: linear-gradient(135deg, var(--vc-accent-bg) 0%, var(--vc-accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.course-detail-hero-icon {
+  font-size: 4rem;
+  opacity: 0.9;
+}
+
+.course-detail-body {
+  padding: 2rem;
+}
+
+.course-detail-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vc-text);
+  margin-bottom: 0.75rem;
+}
+
+.course-detail-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--vc-primary);
+  margin-bottom: 1rem;
+}
+
+.course-detail-desc {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--vc-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.course-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.course-detail-actions .btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+.btn-choose-trainer {
+  background: var(--vc-primary);
+  color: #fff !important;
+  border: none;
+}
+.btn-choose-trainer:hover { background: var(--vc-primary-dark); color: #fff; }
+.btn-back-courses {
+  background: #fff;
+  color: var(--vc-primary);
+  border: 1px solid var(--vc-border);
+}
+.btn-back-courses:hover { background: var(--vc-surface); color: var(--vc-text); }
+
+.course-detail-note {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--vc-accent-bg);
+  border-radius: 10px;
+  font-size: 1rem;
+  color: var(--vc-text);
+}
+

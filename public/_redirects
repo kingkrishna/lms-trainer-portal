@@ -1,0 +1,12 @@
+/courses    /courses.html    200
+/trainers   /trainers.html   200
+/jobs       /jobs.html       200
+/login      /login.html      200
+/register   /register.html   200
+/dashboard  /dashboard.html  200
+/profile    /profile.html    200
+/candidates /candidates.html 200
+/candidate-process   /candidate-process.html  200
+/course-detail       /course-detail.html      200
+/job-detail          /job-detail.html         200
+/trainer-detail      /trainer-detail.html     200

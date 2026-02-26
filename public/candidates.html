@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Candidates – Vision Connects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/candidates.css">
+</head>
+<body class="page-dashboard page-candidates">
+  <header class="dash-header">
+    <div class="container">
+      <div class="dash-header-inner">
+        <a class="dash-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="dash-nav">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html">Profile</a>
+          <a href="candidates.html" class="dash-nav-active">Search candidates</a>
+          <a href="#" id="btnLogout" class="dash-logout">Log out</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="container">
+      <section class="candidates-hero">
+        <div class="candidates-hero-bg"></div>
+        <div class="candidates-hero-content">
+          <span class="candidates-hero-badge">Recruiter workspace</span>
+          <h1 class="dash-title candidates-title">Find the right students faster</h1>
+          <p class="dash-sub candidates-sub">Search candidates by skills and completed courses, then shortlist high-fit profiles quickly.</p>
+        </div>
+      </section>
+
+      <section class="dash-card candidates-search-card">
+        <div class="dash-card-body">
+          <div class="candidates-filters-grid">
+            <div class="candidates-field">
+              <label class="form-label">Skills</label>
+              <input type="text" class="form-control" placeholder="e.g. Tally, GST, Accounting" id="searchSkills">
+            </div>
+            <div class="candidates-field">
+              <label class="form-label">Course completed</label>
+              <input type="text" class="form-control" placeholder="e.g. Financial Accounting" id="searchCourse">
+            </div>
+          </div>
+          <div class="candidates-actions">
+            <button type="button" class="btn btn-primary" id="btnSearch">Search candidates</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnResetSearch">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-card candidates-results-card">
+        <div class="dash-card-body">
+          <div class="candidates-results-head">
+            <h2 class="candidates-results-title">Candidate results</h2>
+            <span class="candidates-results-count" id="candidatesCount">0 candidates</span>
+          </div>
+          <div id="candidatesResults" class="candidates-results-grid">
+            <div class="candidates-empty-state">
+              <p class="text-muted mb-1">Search students who have completed courses and added skills to their profile.</p>
+              <p class="small text-muted mb-0">Results appear here based on skills and course filters.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script src="js/candidates.js"></script>
+</body>
+</html>

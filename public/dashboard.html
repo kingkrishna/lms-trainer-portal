@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="page-dashboard">
+  <header class="dash-header">
+    <div class="container">
+      <div class="dash-header-inner">
+        <a class="dash-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="dash-brand-logo" /></a>
+        <nav class="dash-nav">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html" class="dash-profile-link">Profile</a>
+          <a href="messages.html">Messages</a>
+          <a href="#" id="btnLogout" class="dash-logout">Log out</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="container">
+      <div class="dash-welcome">
+        <h1 class="dash-title">Dashboard</h1>
+        <p class="dash-sub">Loading...</p>
+      </div>
+      <div class="dash-main-sections">
+        <a href="courses.html?school=accounting" class="dash-section-card dash-section-accounting">
+          <span class="dash-section-icon">📒</span>
+          <span class="dash-section-label">Accounting</span>
+          <span class="dash-section-desc">Accounting School, Tax School & more</span>
+        </a>
+        <a href="courses.html?school=technical" class="dash-section-card dash-section-technology">
+          <span class="dash-section-icon">💻</span>
+          <span class="dash-section-label">Technicial Courses</span>
+          <span class="dash-section-desc">Technical Writing (₹12k), Java Course (₹10k)</span>
+        </a>
+      </div>
+      <div id="dashboardContent" class="dash-content">
+        <p class="dash-loading">Loading...</p>
+      </div>
+      <div class="dash-quicklinks">
+        <h3 class="dash-quick-title">Quick links</h3>
+        <div class="row g-3" id="dashQuicklinksRow"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html">Profile</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Enroll as Trainee Modal -->
+  <div class="modal fade" id="enrollTraineeModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Enroll as Trainee</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="enrollTraineeForm">
+          <div class="modal-body">
+            <div id="enrollTraineeError" class="alert alert-danger d-none"></div>
+            <div class="mb-3">
+              <label class="form-label">Student Name</label>
+              <input type="text" class="form-control" name="student_name" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Course</label>
+              <select class="form-select" name="course_id" id="enrollCourseSelect" required></select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contact Number</label>
+              <input type="tel" class="form-control" name="contact_number" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Payment Status</label>
+              <select class="form-select" name="payment_status" required>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    document.getElementById('btnLogout').addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
+      try { await window.api.post('/auth/logout'); } catch (_) {}
+      window.location.href = 'index.html';
+    });
+
+    const enrollModal = document.getElementById('enrollTraineeModal');
+    const enrollForm = document.getElementById('enrollTraineeForm');
+    const enrollCourseSelect = document.getElementById('enrollCourseSelect');
+    const enrollError = document.getElementById('enrollTraineeError');
+    const FALLBACK_COURSES = [
+      { id: 'acc-school', title: 'Accounting School' }, { id: 'tax-school', title: 'Tax School' }, { id: 'tax-writing', title: 'Tax Writing' },
+      { id: 'technical-writing', title: 'Technical Writing' }, { id: 'java-course', title: 'Java Course' }, { id: 'core-accounting', title: 'Core Accounting' }, { id: 'tally', title: 'Tally' },
+    ];
+    function populateCourseSelect(courses) {
+      const list = (courses && courses.length) ? courses : FALLBACK_COURSES;
+      if (enrollCourseSelect) {
+        enrollCourseSelect.innerHTML = list.map(function (c) {
+          return '<option value="' + (c.id || '') + '">' + (c.title || c.id) + '</option>';
+        }).join('');
+      }
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.id === 'btnEnrollTrainee' || e.target.closest('#btnEnrollTrainee')) {
+        if (enrollCourseSelect) {
+          populateCourseSelect(null);
+          if (typeof window.api !== 'undefined') {
+            window.api.get('/courses').then(function (r) {
+              const list = r.courses || (Array.isArray(r) ? r : null);
+              if (list && list.length) populateCourseSelect(list);
+            }).catch(function () {});
+          }
+        }
+        if (enrollError) enrollError.classList.add('d-none');
+        if (enrollModal) new bootstrap.Modal(enrollModal).show();
+      }
+    });
+    if (enrollForm) {
+      enrollForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (enrollError) enrollError.classList.add('d-none');
+        const fd = new FormData(enrollForm);
+        const body = {
+          student_name: fd.get('student_name'),
+          course_id: fd.get('course_id'),
+          contact_number: fd.get('contact_number'),
+          payment_status: fd.get('payment_status'),
+        };
+        try {
+          await window.api.post('/trainer/enroll-trainee', body);
+          bootstrap.Modal.getInstance(enrollModal).hide();
+          enrollForm.reset();
+          if (typeof window.__refreshTrainerEnrollments === 'function') window.__refreshTrainerEnrollments();
+        } catch (err) {
+          if (enrollError) {
+            enrollError.textContent = err.error || 'Enrollment failed';
+            enrollError.classList.remove('d-none');
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

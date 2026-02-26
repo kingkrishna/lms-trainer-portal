@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages – Vision Connects</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="page-dashboard">
+  <header class="dash-header">
+    <div class="container">
+      <div class="dash-header-inner">
+        <a class="dash-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="dash-brand-logo" /></a>
+        <nav class="dash-nav">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="courses.html">Courses</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="profile.html">Profile</a>
+          <a href="messages.html" class="dash-nav-active">Messages</a>
+          <a href="#" id="btnLogout" class="dash-logout">Log out</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="container">
+      <h1 class="dash-title">Inbox</h1>
+      <p class="dash-sub text-muted">Your messages</p>
+      <div id="messagesList" class="dash-panel">
+        <p class="dash-panel-muted">Loading...</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/nav-connect.js"></script>
+  <script>
+    (function () {
+      const listEl = document.getElementById('messagesList');
+      if (!listEl) return;
+      if (typeof window.api === 'undefined' || !window.api.isLoggedIn || !window.api.isLoggedIn()) {
+        window.location.href = 'login.html?redirect=messages.html';
+        return;
+      }
+      document.getElementById('btnLogout').addEventListener('click', function (e) {
+        e.preventDefault();
+        window.api.post('/auth/logout').catch(function () {});
+        window.location.href = 'index.html';
+      });
+      window.api.get('/messages/inbox').then(function (data) {
+        const msgs = data.messages || [];
+        if (msgs.length === 0) {
+          listEl.innerHTML = '<p class="dash-panel-muted">No messages yet.</p>';
+          return;
+        }
+        function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+        listEl.innerHTML = msgs.map(function (m) {
+          return '<div class="list-group-item' + (m.is_read ? '' : ' list-group-item-action') + '">' +
+            '<div class="d-flex w-100 justify-content-between"><h6 class="mb-1">' + esc(m.subject) + '</h6><small>' + esc(new Date(m.created_at).toLocaleDateString()) + '</small></div>' +
+            '<p class="mb-1 small text-muted">From: ' + esc(m.sender_email) + '</p>' +
+            '<p class="mb-0 small">' + esc(m.body) + '</p></div>';
+        }).join('');
+      }).catch(function () {
+        listEl.innerHTML = '<p class="dash-panel-muted">Could not load messages.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

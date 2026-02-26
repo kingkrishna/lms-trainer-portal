@@ -1,0 +1,17 @@
+/* Common styles shared across pages (minimal). Use page-specific CSS for layout and theme. */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Prices: always from API – no client-side calculation */
+.price-display {
+  font-weight: 600;
+  color: var(--vc-primary);
+}

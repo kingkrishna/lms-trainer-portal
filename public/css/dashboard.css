@@ -1,0 +1,641 @@
+/* Dashboard page – unique header + card + quick links grid */
+
+body.page-dashboard {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--bs-body-font-family);
+  background: var(--vc-page-bg);
+}
+
+/* Role-specific accents */
+body.dash-role-student .dash-title { color: var(--vc-primary); }
+body.dash-role-trainer .dash-header { border-bottom-color: color-mix(in srgb, var(--vc-primary) 30%, var(--vc-border)); }
+body.dash-role-recruiter .dash-header { border-bottom-color: color-mix(in srgb, var(--vc-primary-light) 30%, var(--vc-border)); }
+body.dash-role-admin .dash-header { background: var(--vc-text); }
+body.dash-role-admin .dash-nav a { color: rgba(255,255,255,0.8); }
+body.dash-role-admin .dash-nav a:hover { color: #fff; }
+body.dash-role-admin .dash-brand { color: #fff; }
+body.dash-role-admin .dash-brand:hover { color: var(--vc-accent); }
+body.dash-role-admin .dash-brand-logo { filter: brightness(0) invert(1); }
+
+.dash-header {
+  background: #fff;
+  border-bottom: 1px solid var(--vc-border);
+  padding: 1rem 0;
+}
+
+.dash-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dash-brand {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--vc-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+.dash-brand:hover { color: var(--vc-primary); }
+.dash-brand-logo {
+  max-height: 36px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.dash-main-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.dash-section-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.25rem;
+  background: #fff;
+  border: 2px solid var(--vc-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--vc-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dash-section-card:hover {
+  border-color: var(--vc-primary);
+  box-shadow: 0 4px 12px rgba(32, 191, 155, 0.15);
+}
+.dash-section-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.dash-section-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--vc-text);
+}
+.dash-section-desc {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  margin-top: 0.25rem;
+}
+
+.dash-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+.dash-nav a {
+  font-weight: 500;
+  color: var(--vc-text-muted);
+  text-decoration: none;
+  font-size: 1rem;
+}
+.dash-nav a:hover { color: var(--vc-text); text-decoration: underline; }
+.dash-nav-active { color: var(--vc-primary) !important; font-weight: 600; }
+.dash-logout { color: var(--vc-error) !important; }
+.dash-logout:hover { color: #b91c1c !important; }
+
+.dash-main {
+  padding: 2.5rem 0 4rem;
+}
+
+.dash-welcome {
+  margin-bottom: 1.5rem;
+}
+
+.dash-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vc-text);
+  margin-bottom: 0.35rem;
+}
+
+.dash-sub {
+  color: var(--vc-text-muted);
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.dash-loading {
+  color: var(--vc-text-muted);
+  opacity: 0.8;
+}
+
+.dash-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--vc-border);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.dash-card-body {
+  padding: 1.75rem;
+}
+
+.dash-card-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin-bottom: 1rem;
+}
+
+.dash-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.dash-meta dt { color: var(--vc-text); font-weight: 600; margin: 0; }
+.dash-meta dd { color: var(--vc-text-muted); margin: 0; }
+
+.dash-note {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  opacity: 0.9;
+  margin: 0;
+}
+
+.dash-error {
+  color: var(--vc-error);
+}
+.dash-error a { color: #b91c1c; font-weight: 600; }
+
+.dash-quicklinks {
+  margin-top: 2rem;
+}
+
+.dash-quick-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin-bottom: 1rem;
+}
+
+.dash-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--vc-text);
+  font-weight: 600;
+  transition: background 0.2s, border-color 0.2s;
+}
+.dash-quick-card:hover { background: var(--vc-accent-bg); border-color: var(--vc-accent); color: var(--vc-text); }
+
+.dash-quick-icon { font-size: 1.25rem; }
+.dash-quick-label { font-size: 1rem; }
+
+/* ----- Role-specific dashboards ----- */
+
+/* Stats row (Student, Trainer, Recruiter) */
+.dash-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-stat-card {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dash-stat-card:hover {
+  border-color: var(--vc-accent);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.dash-stat-num {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vc-primary);
+  line-height: 1.2;
+}
+
+.dash-stat-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--vc-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Status banners (Trainer, Recruiter) */
+.dash-status-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.dash-status-pending {
+  background: color-mix(in srgb, #f59e0b 12%, #fff);
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, transparent);
+}
+
+.dash-status-success {
+  background: color-mix(in srgb, var(--vc-primary) 12%, #fff);
+  border-color: var(--vc-primary);
+}
+.dash-status-warning {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+.dash-status-info {
+  background: color-mix(in srgb, var(--vc-primary) 10%, #fff);
+  border: 1px solid var(--vc-accent);
+}
+
+.dash-status-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.dash-status-banner strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--vc-text);
+  margin-bottom: 0.25rem;
+}
+
+.dash-status-banner p {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0;
+}
+
+/* Panels / cards grid */
+.dash-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-panel {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dash-panel:hover {
+  border-color: var(--vc-accent);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.dash-panel-full {
+  grid-column: 1 / -1;
+}
+
+.dash-panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.dash-panel-desc {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.dash-panel-cta {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vc-primary);
+  text-decoration: none;
+}
+.dash-panel-cta:hover { color: var(--vc-primary-dark); }
+
+.dash-panel-muted {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  font-style: italic;
+}
+
+/* Admin dashboard */
+.dash-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-admin-card {
+  background: #fff;
+  border: 2px solid var(--vc-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dash-admin-card:hover {
+  border-color: var(--vc-primary);
+  background: var(--vc-accent-bg);
+}
+
+.dash-admin-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.dash-admin-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--vc-text);
+  margin: 0 0 0.35rem 0;
+}
+
+.dash-admin-card p {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.dash-admin-stat {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vc-primary);
+}
+
+/* ----- Student dashboard (LinkedIn/Naukri style) ----- */
+.dash-student-linkedin .dash-stats-row {
+  display: none;
+}
+
+.dash-student-hero {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.dash-student-cover {
+  height: 120px;
+  background: var(--vc-gradient);
+  border-radius: 12px 12px 0 0;
+}
+
+.dash-student-profile-card {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 0 1.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.dash-student-avatar-wrap {
+  margin-top: -48px;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.dash-student-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--vc-accent-bg);
+}
+
+.dash-student-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--vc-primary);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dash-student-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--vc-text);
+  margin: 0 0 0.2rem 0;
+}
+
+.dash-student-headline {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0;
+}
+
+.dash-student-profile-strength {
+  background: #fff;
+  border: 1px solid var(--vc-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-profile-strength-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.dash-profile-strength-bar {
+  height: 8px;
+  background: var(--vc-accent-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.dash-profile-strength-fill {
+  height: 100%;
+  background: var(--vc-gradient);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.dash-profile-strength-hint {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  margin: 0 0 0.75rem 0;
+}
+
+.dash-profile-strength-cta {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vc-primary);
+  text-decoration: none;
+}
+.dash-profile-strength-cta:hover { color: var(--vc-primary-dark); }
+
+.dash-student-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-student-stats .dash-stat-card {
+  text-align: center;
+}
+
+.dash-stat-sub {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--vc-text-muted);
+  margin-top: 0.15rem;
+}
+
+.dash-student-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .dash-student-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-student-main .dash-panel { margin-bottom: 1.25rem; }
+.dash-student-sidebar .dash-panel { margin-bottom: 1.25rem; }
+
+.dash-recruiter-placeholder,
+.dash-jobs-placeholder {
+  background: var(--vc-accent-bg);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.dash-recruiter-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+
+.dash-recruiter-placeholder p,
+.dash-jobs-placeholder p {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  margin: 0 0 0.75rem 0;
+}
+
+.dash-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem 0;
+}
+
+.dash-skill-tag {
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: var(--vc-accent-bg);
+  color: var(--vc-primary);
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid var(--vc-accent);
+}
+
+.dash-panel-success {
+  font-size: 1rem;
+  color: var(--vc-primary);
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.dash-panel-highlight {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--vc-primary) 8%, #fff) 0%, color-mix(in srgb, var(--vc-primary-light) 8%, #fff) 100%);
+  border-color: var(--vc-accent);
+}
+
+.dash-panel-cta.small {
+  font-size: 0.95rem;
+}
+
+/* Demo badge */
+.dash-demo-badge {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  background: var(--vc-accent-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin: 1rem 0 0 0;
+}
+.dash-demo-badge code {
+  font-size: 0.9rem;
+  background: #fff;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* My courses list on student dashboard */
+.dash-my-courses-list {
+  margin: 0.75rem 0;
+  min-height: 2rem;
+}
+.dash-course-card {
+  display: block;
+  padding: 0.75rem 1rem;
+  background: var(--vc-accent-bg);
+  border: 1px solid var(--vc-border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--vc-text);
+  transition: border-color 0.2s, background 0.2s;
+}
+.dash-course-card:hover {
+  border-color: var(--vc-primary);
+  background: color-mix(in srgb, var(--vc-primary) 6%, #fff);
+}
+.dash-course-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+}
+.dash-course-card-trainer {
+  font-size: 0.9rem;
+  color: var(--vc-text-muted);
+  display: block;
+  margin-top: 0.2rem;
+}
+.dash-course-card-status {
+  font-size: 0.8rem;
+  color: var(--vc-primary);
+  display: inline-block;
+  margin-top: 0.35rem;
+  text-transform: capitalize;
+}
+

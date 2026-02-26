@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/register.css">
+</head>
+<body class="page-register">
+  <header class="register-header">
+    <div class="container">
+      <a class="register-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+      <a class="register-login" href="login.html">Log in</a>
+    </div>
+  </header>
+
+  <main class="register-main">
+    <div class="container">
+      <div class="register-head">
+        <h1 class="register-title">Create your account</h1>
+        <p class="register-sub">Choose your role and get started. Free to sign up.</p>
+      </div>
+
+      <div class="register-card">
+        <form id="registerForm">
+          <div class="register-role-row mb-4">
+            <label class="form-label d-block mb-2">I am a</label>
+            <div class="role-options">
+              <label class="role-option">
+                <input type="radio" name="role" value="student" id="roleStudent" required>
+                <span class="role-box">
+                  <span class="role-icon">🎓</span>
+                  <span class="role-name">Student</span>
+                  <span class="role-desc">Learn & apply for jobs</span>
+                </span>
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="trainer" id="roleTrainer">
+                <span class="role-box">
+                  <span class="role-icon">👤</span>
+                  <span class="role-name">Trainer</span>
+                  <span class="role-desc">Teach courses</span>
+                </span>
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="recruiter" id="roleRecruiter">
+                <span class="role-box">
+                  <span class="role-icon">💼</span>
+                  <span class="role-name">Recruiter</span>
+                  <span class="role-desc">Post jobs & hire</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label" for="regEmail">Email</label>
+              <input type="email" class="form-control" id="regEmail" name="email" required placeholder="you@example.com">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="regPassword">Password (min 8 characters)</label>
+              <input type="password" class="form-control" id="regPassword" name="password" minlength="8" required placeholder="••••••••">
+            </div>
+            <div class="col-md-6" id="fullNameGroup">
+              <label class="form-label" for="regFullName">Full name</label>
+              <input type="text" class="form-control" id="regFullName" name="full_name" placeholder="Your name">
+            </div>
+            <div class="col-md-6 d-none" id="companyGroup">
+              <label class="form-label" for="regCompany">Company name</label>
+              <input type="text" class="form-control" id="regCompany" name="company_name" placeholder="Company">
+            </div>
+            <div class="col-md-6 d-none" id="contactPersonGroup">
+              <label class="form-label" for="regContact">Contact person</label>
+              <input type="text" class="form-control" id="regContact" name="contact_person" placeholder="Name">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="regPhone">Phone (optional)</label>
+              <input type="text" class="form-control" id="regPhone" name="phone" placeholder="+1 234 567 8900">
+            </div>
+            <div class="col-12 d-none" id="bioGroup">
+              <label class="form-label" for="regBio">Bio (optional)</label>
+              <textarea class="form-control" id="regBio" name="bio" rows="2" placeholder="Short bio for your trainer profile"></textarea>
+            </div>
+          </div>
+
+          <div class="register-divider my-3"><span>or sign up with</span></div>
+          <div id="googleSignInContainer" class="mb-3">
+            <div id="googleSignInBtn"></div>
+          </div>
+          <div id="registerError" class="alert alert-danger d-none mt-3" role="alert"></div>
+          <div id="registerDemo" class="d-none mt-3 p-3 rounded" style="background:var(--vc-accent-bg);border:1px solid var(--vc-border);">
+            <p class="mb-2 small">You can still use the dashboard with a demo account—no server required.</p>
+            <p class="mb-2 small text-muted">Or <a href="login.html">log in</a> with demo: Student, Trainer, Recruiter, Admin</p>
+            <button type="button" class="btn btn-primary" id="btnDemoMode">Continue in demo mode</button>
+          </div>
+          <button type="submit" class="btn btn-register-submit w-100 mt-4">Sign up</button>
+        </form>
+        <p class="register-footer-text">Already have an account? <a href="login.html">Log in</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script>window.GOOGLE_CLIENT_ID = '1030734771877-hm8k95fhogmlii1bfvs5edskqjob1hcj.apps.googleusercontent.com';</script>
+  <script src="js/google-auth.js"></script>
+  <script>
+    const roleInputs = document.querySelectorAll('input[name="role"]');
+    const fullNameGroup = document.getElementById('fullNameGroup');
+    const companyGroup = document.getElementById('companyGroup');
+    const contactPersonGroup = document.getElementById('contactPersonGroup');
+    const bioGroup = document.getElementById('bioGroup');
+
+    function toggleFields() {
+      const role = document.querySelector('input[name="role"]:checked')?.value || 'student';
+      fullNameGroup.classList.toggle('d-none', role === 'recruiter');
+      companyGroup.classList.toggle('d-none', role !== 'recruiter');
+      contactPersonGroup.classList.toggle('d-none', role !== 'recruiter');
+      bioGroup.classList.toggle('d-none', role !== 'trainer');
+    }
+    roleInputs.forEach(r => r.addEventListener('change', toggleFields));
+    document.getElementById('roleStudent').checked = true;
+    toggleFields();
+
+    const errEl = document.getElementById('registerError');
+    window.initGoogleAuth({
+      buttonText: 'signup_with',
+      getRole: function () { return document.querySelector('input[name="role"]:checked')?.value || 'student'; },
+      onError: function (msg) {
+        errEl.textContent = msg;
+        errEl.classList.remove('d-none');
+      },
+    });
+    const demoEl = document.getElementById('registerDemo');
+    const btnDemo = document.getElementById('btnDemoMode');
+
+    function saveDemoAndRedirect(fd) {
+      const role = fd.get('role') || 'student';
+      const demo = {
+        email: fd.get('email') || 'demo@example.com',
+        role: role,
+        full_name: (role === 'recruiter') ? fd.get('company_name') : fd.get('full_name'),
+        company_name: role === 'recruiter' ? fd.get('company_name') : null,
+      };
+      try {
+        localStorage.setItem('lms_demo_user', JSON.stringify(demo));
+      } catch (_) {}
+      window.location.href = 'dashboard.html';
+    }
+
+    if (btnDemo) {
+      btnDemo.addEventListener('click', () => {
+        const fd = new FormData(document.getElementById('registerForm'));
+        saveDemoAndRedirect(fd);
+      });
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.classList.add('d-none');
+      if (demoEl) demoEl.classList.add('d-none');
+      const fd = new FormData(e.target);
+      const body = {
+        email: fd.get('email'),
+        password: fd.get('password'),
+        role: fd.get('role'),
+      };
+      if (fd.get('role') === 'student' || fd.get('role') === 'trainer') body.full_name = fd.get('full_name') || undefined;
+      if (fd.get('role') === 'recruiter') {
+        body.company_name = fd.get('company_name');
+        body.contact_person = fd.get('contact_person') || undefined;
+      }
+      if (fd.get('phone')) body.phone = fd.get('phone');
+      if (fd.get('bio')) body.bio = fd.get('bio');
+      try {
+        await window.api.post('/auth/register', body);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        const isNetwork = err.message === 'Failed to fetch' || err.name === 'TypeError';
+        const is404 = err.status === 404;
+        const is500 = err.status === 500;
+        const serverError = isNetwork || is404 || is500;
+        if (serverError) {
+          errEl.textContent = is500
+            ? 'Registration service error. The database may not be set up—run "npm run db:migrate" and ensure MySQL is running. Or use demo mode below.'
+            : 'Registration service unavailable. Run "npm start" with MySQL configured. Or use demo mode below.';
+          if (demoEl) demoEl.classList.remove('d-none');
+        } else {
+          errEl.textContent = err.error || (err.details && err.details[0] && err.details[0].msg) || 'Registration failed';
+        }
+        errEl.classList.remove('d-none');
+      }
+    });
+  </script>
+</body>
+</html>

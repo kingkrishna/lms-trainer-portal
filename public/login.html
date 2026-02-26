@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="page-login">
+  <a href="index.html" class="login-logo" aria-label="Vision Connects Home">
+    <img src="images/logo-light.svg" alt="Vision Connects" class="login-logo-img" />
+  </a>
+  <div class="login-wrap">
+    <aside class="login-side">
+      <div class="login-side-inner">
+        <a class="login-side-brand" href="index.html">Vision Connects</a>
+        <h2 class="login-side-title">Welcome back</h2>
+        <p class="login-side-text">Sign in to access your courses, trainer dashboard, or recruiter account.</p>
+        <ul class="login-side-list">
+          <li>Secure, server-verified access</li>
+          <li>One account for learning & jobs</li>
+        </ul>
+      </div>
+    </aside>
+    <div class="login-main">
+      <div class="login-form-wrap">
+        <h1 class="login-form-title">Log in</h1>
+        <div id="loginEnrollHint" class="alert alert-info d-none mb-3" role="alert">Sign in as a student to complete your enrollment. You'll be redirected to the enrollment page after login.</div>
+        <form id="loginForm" class="login-form">
+          <div class="mb-3">
+            <label class="form-label" for="loginEmail">Email</label>
+            <input type="email" class="form-control" id="loginEmail" name="email" required placeholder="you@example.com">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" class="form-control" id="loginPassword" name="password" required placeholder="••••••••">
+          </div>
+          <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+          <button type="submit" class="btn btn-login-submit w-100">Log in</button>
+          <div class="login-divider my-3"><span>or</span></div>
+          <div id="googleSignInContainer" class="mb-2">
+            <div id="googleSignInBtn"></div>
+          </div>
+          <div class="login-demo mt-3 p-3 rounded" style="background:var(--vc-accent-bg);border:1px solid var(--vc-border);">
+            <p class="mb-2 small fw-semibold">Demo credentials (no server needed)</p>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="student">Student</button>
+              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="trainer">Trainer</button>
+              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="recruiter">Recruiter</button>
+              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="super_admin">Admin</button>
+            </div>
+          </div>
+        </form>
+        <p class="login-form-footer">
+          Don’t have an account? <a href="register.html">Sign up</a>
+        </p>
+        <a href="index.html" class="login-back">← Back to home</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="register.html">Sign up</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script>
+    (function() {
+      const p = new URLSearchParams(window.location.search);
+      const r = p.get('redirect') || '';
+      if (r.includes('candidate-process')) {
+        var el = document.getElementById('loginEnrollHint');
+        if (el) { el.classList.remove('d-none'); }
+      }
+    })();
+  </script>
+  <script>window.GOOGLE_CLIENT_ID = '1030734771877-hm8k95fhogmlii1bfvs5edskqjob1hcj.apps.googleusercontent.com';</script>
+  <script src="js/google-auth.js"></script>
+  <script>
+    const DEMO_ACCOUNTS = {
+      student: { email: 'demo-student@visionconnects.com', password: 'password123' },
+      trainer: { email: 'demo-trainer@visionconnects.com', password: 'password123' },
+      recruiter: { email: 'demo-recruiter@visionconnects.com', password: 'password123' },
+      super_admin: { email: 'admin@visionconnects.com', password: 'password123' },
+    };
+    const getRedirectUrl = () => {
+      const p = new URLSearchParams(window.location.search);
+      const r = p.get('redirect');
+      return r && !r.includes('login') ? r : 'dashboard.html';
+    };
+
+    document.querySelectorAll('[data-demo-role]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const demo = DEMO_ACCOUNTS[btn.dataset.demoRole];
+        if (!demo) return;
+        const errEl = document.getElementById('loginError');
+        errEl.classList.add('d-none');
+        try {
+          await window.api.post('/auth/login', { email: demo.email, password: demo.password });
+          try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
+          window.location.href = getRedirectUrl();
+        } catch (err) {
+          errEl.textContent = err.error || 'Login failed. Is the server running?';
+          errEl.classList.remove('d-none');
+        }
+      });
+    });
+
+    window.initGoogleAuth({
+      onSuccess: function () { window.location.href = getRedirectUrl(); },
+      onError: function (msg) {
+        document.getElementById('loginError').textContent = msg;
+        document.getElementById('loginError').classList.remove('d-none');
+      },
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('d-none');
+      const fd = new FormData(e.target);
+      try {
+        await window.api.post('/auth/login', { email: fd.get('email'), password: fd.get('password') });
+        try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
+        const p = new URLSearchParams(window.location.search);
+        const r = p.get('redirect');
+        window.location.href = (r && r !== 'login.html' && !r.includes('login')) ? r : 'dashboard.html';
+      } catch (err) {
+        const isNetwork = err && (err.message === 'Failed to fetch' || (err.message && String(err.message).toLowerCase().includes('network')));
+        const msg = err && err.error ? err.error : (isNetwork ? 'Cannot reach server. Start it with: npm start' : 'Login failed');
+        errEl.textContent = msg;
+        errEl.classList.remove('d-none');
+      }
+    });
+  </script>
+</body>
+</html>

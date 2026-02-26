@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trainers – Vision Connects</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://db.onlinewebfonts.com/c/eb6b0dff01f56021ee7bbfd0328b8b51?family=ITC+Tempus+Sans+W02+Regular" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/trainers.css">
+</head>
+<body class="page-trainers">
+  <header class="trainers-header">
+    <div class="container">
+      <div class="trainers-header-inner">
+        <a class="trainers-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="brand-logo" /></a>
+        <nav class="trainers-nav">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html" class="active">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="profile.html">Profile</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="trainers-main">
+    <!-- Hero banner -->
+    <section class="trainers-banner">
+      <div class="trainers-banner-bg"></div>
+      <div class="container position-relative">
+        <div class="trainers-banner-inner">
+          <span class="trainers-banner-badge">Marketplace</span>
+          <h1 class="trainers-banner-title">Learn from expert trainers</h1>
+          <p class="trainers-banner-text">Verified accounting & finance professionals. Choose a trainer for your course—live sessions, materials, and support included.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container trainers-body">
+      <!-- Status tabs (shown to admin) -->
+      <div class="trainers-status-tabs d-none" id="trainersStatusTabs" role="tablist">
+        <button type="button" class="trainers-status-tab active" data-status="approved">Approved</button>
+        <button type="button" class="trainers-status-tab" data-status="pending">Pending</button>
+        <button type="button" class="trainers-status-tab" data-status="rejected">Rejected</button>
+        <button type="button" class="trainers-status-tab" data-status="all">All</button>
+      </div>
+      <!-- Toolbar -->
+      <div class="trainers-toolbar">
+        <div class="trainers-toolbar-left">
+          <span class="trainers-count" id="trainerCount">All trainers</span>
+        </div>
+        <div class="trainers-toolbar-right">
+          <div class="trainers-search-wrap">
+            <input type="text" class="trainers-search" id="trainerSearch" placeholder="Search by name or course..." aria-label="Search trainers">
+          </div>
+        </div>
+      </div>
+
+      <!-- Trainer cards grid -->
+      <div id="trainerList" class="trainers-grid"></div>
+
+      <!-- Empty state -->
+      <div id="trainersEmpty" class="trainers-empty d-none">
+        <div class="trainers-empty-icon">👤</div>
+        <h3>No trainers found</h3>
+        <p>Try a different search or check back later for new trainers.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a class="footer-brand" href="index.html"><img src="images/logo.svg" alt="Vision Connects" class="footer-brand-logo" /></a>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="courses.html">Courses</a>
+          <a href="trainers.html">Trainers</a>
+          <a href="jobs.html" data-hide-for="trainer">Jobs</a>
+          <a href="login.html">Log in</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <span class="mx-2">|</span>
+        <a href="terms-and-conditions.html">Terms & Conditions</a>
+      </div>
+      <p class="footer-copy mb-0 mt-2">Vision Connects — Secure learning, trainer marketplace & job portal.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/role-nav.js"></script>
+  <script src="js/nav-connect.js"></script>
+  <script src="js/trainers.js"></script>
+</body>
+</html>

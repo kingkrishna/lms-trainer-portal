@@ -1,0 +1,151 @@
+@import url('https://db.onlinewebfonts.com/c/eb6b0dff01f56021ee7bbfd0328b8b51?family=ITC+Tempus+Sans+W02+Regular');
+
+:root {
+  --bs-body-font-family: "ITC Tempus Sans W02 Regular", "Tempus Sans ITC", sans-serif;
+
+  /* Website palette – teal-green to bright blue gradient */
+  --vc-primary: #20BF9B;
+  --vc-primary-dark: #1aa88a;
+  --vc-primary-light: #3879F4;
+  --vc-gradient: linear-gradient(90deg, #20BF9B 0%, #3879F4 100%);
+  --vc-accent: #3879F4;
+  --vc-accent-bg: #e8f5f8;
+  --vc-text: #1a2b3c;
+  --vc-text-muted: #5a6b7c;
+  --vc-border: #e8e2d8;
+  --vc-surface: #f7f3eb;
+  --vc-page-bg: #faf6ef;
+  --vc-banner-from: #20BF9B;
+  --vc-banner-to: #3879F4;
+  --vc-card-border: #e2e8f0;
+  --vc-card-hover: var(--vc-primary);
+  --vc-error: #dc2626;
+  --vc-error-bg: #fef2f2;
+  --vc-dark: #1a2b3c;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--bs-body-font-family);
+  background: var(--vc-page-bg);
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: var(--bs-body-font-family);
+}
+
+main {
+  flex: 1;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Logo image – used across courses, trainers, jobs, profile, register, etc. */
+.brand-logo {
+  height: 32px;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+  display: block;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+/* Ensure prices are always from API – no client-side calculation */
+.price-display {
+  font-weight: 600;
+  color: var(--vc-primary);
+}
+
+/* Primary buttons – teal-to-blue gradient */
+.btn-primary {
+  background: var(--vc-gradient) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(32, 191, 155, 0.35);
+}
+.btn-primary:hover {
+  opacity: 0.95;
+  box-shadow: 0 6px 16px rgba(32, 191, 155, 0.45);
+}
+
+/* Site footer – used on all pages */
+.site-footer {
+  margin-top: auto;
+  padding: 2rem 0 1rem;
+  background: var(--vc-page-bg);
+  border-top: 1px solid var(--vc-border);
+}
+.site-footer .footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.site-footer .footer-brand {
+  display: inline-block;
+}
+.site-footer .footer-brand-logo {
+  height: 28px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+  display: block;
+}
+.site-footer .footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+.site-footer .footer-links a {
+  font-size: 1rem;
+  color: var(--vc-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.site-footer .footer-links a:hover {
+  color: var(--vc-text);
+}
+.site-footer .footer-bottom {
+  font-size: 0.95rem;
+  color: var(--vc-text-muted);
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--vc-border);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.site-footer .footer-bottom a {
+  color: var(--vc-text-muted);
+  text-decoration: none;
+}
+.site-footer .footer-bottom a:hover {
+  color: var(--vc-primary);
+}
+.footer-copy { font-size: 0.95rem; color: var(--vc-text-muted); }
+
+/* Nav account dropdown – used by nav-connect.js */
+.nav-account-dropdown .nav-link-dropdown {
+  font-weight: 500;
+  color: var(--vc-text-muted);
+  text-decoration: none;
+}
+.nav-account-dropdown .nav-link-dropdown:hover { color: var(--vc-text); }
+.nav-account-dropdown .dropdown-menu { min-width: 10rem; }
