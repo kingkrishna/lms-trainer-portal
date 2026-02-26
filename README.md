@@ -113,6 +113,18 @@ See `docs/SECURITY_PLAN.md` and `docs/API_CONTRACTS.md` for full details.
 
 See `.env.example`. Required: `DB_*`, `JWT_SECRET`. For payments add Razorpay/Stripe keys and webhook secrets. For Zoho add client credentials and refresh token.
 
+## Deploy to Render (one-click)
+
+The repo includes `render.yaml` for one-click deployment.
+
+1. Go to [render.com](https://render.com) and sign in with GitHub.
+2. Click **New** → **Blueprint**.
+3. Connect the `lms-trainer-portal` repo.
+4. Render will use `render.yaml` — click **Apply**.
+5. The app deploys with dummy data (no database). Add `DB_*`, `RAZORPAY_*`, etc. in the Render dashboard if needed.
+
+Live URL: `https://lms-trainer-portal.onrender.com` (or similar).
+
 ## Deploy to Vercel
 
 1. **Install Vercel CLI** (optional): `npm i -g vercel`

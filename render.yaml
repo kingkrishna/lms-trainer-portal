@@ -1,0 +1,19 @@
+# Render Blueprint - deploy from GitHub: render.com/new
+# Connects to your repo and auto-deploys on push
+
+services:
+  - type: web
+    name: lms-trainer-portal
+    runtime: node
+    region: oregon
+
+    buildCommand: npm install
+    startCommand: npm start
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_DUMMY_DATA
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true

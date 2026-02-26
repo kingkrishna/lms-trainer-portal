@@ -4,7 +4,7 @@ module.exports = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT, 10) || 3000,
   apiBase: process.env.API_BASE_URL || '/api',
-  frontendUrl: process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || (process.env.URL ? process.env.URL : null) || 'http://localhost:5500',
+  frontendUrl: process.env.FRONTEND_URL || (process.env.RENDER_EXTERNAL_URL ? process.env.RENDER_EXTERNAL_URL : null) || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) || (process.env.URL ? process.env.URL : null) || 'http://localhost:5500',
   // In development, allow common origins (Live Server 5500, Node 3000)
   corsOrigins: process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
@@ -15,7 +15,7 @@ module.exports = {
         'http://127.0.0.1:5500',
       ],
 
-  useDummyData: process.env.USE_DUMMY_DATA === 'true' || process.env.USE_DUMMY_DATA === '1' || !!process.env.VERCEL || !!process.env.NETLIFY,
+  useDummyData: process.env.USE_DUMMY_DATA === 'true' || process.env.USE_DUMMY_DATA === '1' || !!process.env.VERCEL || !!process.env.NETLIFY || !!process.env.RENDER,
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 3306,
