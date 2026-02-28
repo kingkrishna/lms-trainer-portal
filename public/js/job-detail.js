@@ -8,64 +8,7 @@
   var contentEl = document.getElementById('jobDetailContent');
   var breadcrumbEl = document.getElementById('breadcrumbTitle');
 
-  var DEMO_JOBS = {
-    'job-1': {
-      id: 'job-1',
-      title: 'Junior Accountant',
-      company: 'ABC & Co. Chartered Accountants',
-      location: 'Mumbai, Maharashtra',
-      job_type: 'full_time',
-      description: 'Handle day-to-day bookkeeping, bank reconciliation, and assist in financial statements. Tally experience preferred.\n\nRequirements: B.Com or equivalent; 0–2 years experience. Good communication and attention to detail.',
-    },
-    'job-2': {
-      id: 'job-2',
-      title: 'Tax Associate',
-      company: 'XYZ Tax Consultants',
-      location: 'Bangalore, Karnataka',
-      job_type: 'full_time',
-      description: 'Income tax and GST compliance, return filing, and client support. Fresh CAs and commerce graduates welcome.\n\nRequirements: CA/CMA/B.Com. Knowledge of tax software and Excel. Willing to learn and work in a team.',
-    },
-    'job-3': {
-      id: 'job-3',
-      title: 'Audit Trainee',
-      company: 'Grant & Partners',
-      location: 'Delhi NCR',
-      job_type: 'full_time',
-      description: 'Support statutory and internal audit engagements. CA Inter / Final students can apply.\n\nRequirements: CA Inter cleared. Good understanding of auditing standards and documentation.',
-    },
-    'job-4': {
-      id: 'job-4',
-      title: 'Tally Operator',
-      company: 'Retail Solutions Pvt Ltd',
-      location: 'Chennai, Tamil Nadu',
-      job_type: 'full_time',
-      description: 'Maintain accounts in Tally, GST returns, and vendor reconciliation. 1–2 years experience.\n\nRequirements: B.Com with Tally certification or equivalent experience. Familiarity with GST portal.',
-    },
-    'job-5': {
-      id: 'job-5',
-      title: 'Finance Intern',
-      company: 'ScaleUp Ventures',
-      location: 'Remote',
-      job_type: 'internship',
-      description: 'Assist in financial reporting, variance analysis, and dashboards. MBA/CA students preferred.\n\nRequirements: Pursuing or completed MBA (Finance) / CA. Excel and basic financial modelling. 3–6 months commitment.',
-    },
-    'job-6': {
-      id: 'job-6',
-      title: 'Accounts Executive',
-      company: 'Metro Manufacturing Ltd',
-      location: 'Pune, Maharashtra',
-      job_type: 'full_time',
-      description: 'Cost accounting, inventory, and month-end closing. CMA or B.Com with 2+ years experience.\n\nRequirements: CMA/B.Com with cost accounting experience. ERP exposure is a plus.',
-    },
-    'job-7': {
-      id: 'job-7',
-      title: 'Part-time Bookkeeper',
-      company: 'Small Business Services',
-      location: 'Hyderabad, Telangana',
-      job_type: 'part_time',
-      description: 'Bookkeeping and payroll for multiple clients. Flexible hours. Tally knowledge required.\n\nRequirements: 2+ years bookkeeping experience. Reliable and able to work independently.',
-    },
-  };
+  var JOB_CACHE = {};
 
   function getJobTypeLabel(type) {
     var map = { full_time: 'Full-time', part_time: 'Part-time', internship: 'Internship', contract: 'Contract' };
@@ -131,7 +74,7 @@
         var coverMsg = cover ? cover.value.trim() : '';
         btn.disabled = true;
         btn.textContent = 'Submitting…';
-        window.api.post('/jobs/' + encodeURIComponent(job.id) + '/apply', { cover_message: coverMsg })
+        window.api.post('/jobs/' + encodeURIComponent(job.id) + '/applications', { cover_message: coverMsg })
           .then(function () {
             btn.textContent = 'Applied ✓';
             btn.classList.add('btn-secondary', 'disabled');
@@ -197,7 +140,7 @@
       : Promise.resolve({ applications: [] });
 
     Promise.all([jobPromise, mePromise, myAppsPromise]).then(function (results) {
-      var job = results[0] && results[0].id ? results[0] : (DEMO_JOBS[id] || null);
+      var job = results[0] && results[0].id ? results[0] : (JOB_CACHE[id] || null);
       var me = results[1];
       var myApps = results[2] || { applications: [] };
       var role = me && me.user ? me.user.role : null;

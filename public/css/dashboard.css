@@ -585,22 +585,6 @@ body.dash-role-admin .dash-brand-logo { filter: brightness(0) invert(1); }
   font-size: 0.95rem;
 }
 
-/* Demo badge */
-.dash-demo-badge {
-  font-size: 0.95rem;
-  color: var(--vc-text-muted);
-  background: var(--vc-accent-bg);
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  margin: 1rem 0 0 0;
-}
-.dash-demo-badge code {
-  font-size: 0.9rem;
-  background: #fff;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-}
-
 /* My courses list on student dashboard */
 .dash-my-courses-list {
   margin: 0.75rem 0;

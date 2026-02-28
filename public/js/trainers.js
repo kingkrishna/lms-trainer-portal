@@ -15,50 +15,7 @@
   var currentStatus = 'approved';
   var isAdmin = false;
 
-  var DEMO_TRAINERS = [
-    {
-      id: 'tr-1',
-      slug: 'tr-1',
-      full_name: 'Nitin Kumar D',
-      bio: 'Specialist trainer for Zoho Books and AI in Accounting workflows.',
-      courses: ['Zoho Books', 'AI in Accounting'],
-      badge: 'Verified',
-      approval_status: 'approved',
-    },
-    {
-      id: 'tr-2',
-      full_name: 'Ashok Raju',
-      bio: 'Tax trainer focused on GST, Income Tax, and TDS compliance.',
-      courses: ['GST', 'Income Tax', 'TDS'],
-      badge: 'Popular',
-    },
-    {
-      id: 'tr-3',
-      full_name: 'Prasanth',
-      bio: 'Taxz trainer for GST, Income Tax, and TDS practical sessions.',
-      courses: ['Taxz - GST', 'Income Tax', 'TDS'],
-      badge: 'Pro',
-    },
-    {
-      id: 'tr-4',
-      full_name: 'Venkatesh',
-      bio: 'Core Accounting trainer with focus on strong accounting fundamentals.',
-      courses: ['Core Accounting'],
-      badge: 'New',
-    },
-    {
-      id: 'tr-5',
-      full_name: 'Srinivas',
-      bio: 'Tally and GST Simulation trainer for hands-on practical learning.',
-      courses: ['Tally', 'GST Simulation'],
-    },
-    {
-      id: 'tr-6',
-      full_name: 'JayaShree',
-      bio: 'GST Simulation trainer focused on practical workflows and filing scenarios.',
-      courses: ['GST Simulation'],
-    },
-  ];
+  var INITIAL_TRAINERS = [];
 
   function escapeHtml(text) {
     if (!text) return '';
@@ -140,7 +97,7 @@
     });
   }
 
-  var allTrainers = DEMO_TRAINERS.slice();
+  var allTrainers = [];
 
   function fetchUserRole(cb) {
     if (typeof window.api === 'undefined' || !window.api.isLoggedIn || !window.api.isLoggedIn()) {
@@ -166,16 +123,19 @@
     if (typeof window.api === 'undefined') return;
 
     var url = '/trainers';
-    if (isAdmin && currentStatus) url += '?status=' + encodeURIComponent(currentStatus);
+    var query = [];
+    if (isAdmin && currentStatus) query.push('status=' + encodeURIComponent(currentStatus));
+    if (courseFromUrl) query.push('course=' + encodeURIComponent(courseFromUrl));
+    if (query.length) url += '?' + query.join('&');
     window.api.get(url)
       .then(function (data) {
         var list = data;
         if (data && Array.isArray(data.trainers)) list = data.trainers;
-        if (Array.isArray(list) && list.length > 0) allTrainers = list;
+        allTrainers = Array.isArray(list) ? list : [];
         renderList(filterTrainers(allTrainers, trainerSearchEl ? trainerSearchEl.value : ''));
       })
       .catch(function () {
-        allTrainers = DEMO_TRAINERS.slice();
+        allTrainers = [];
         renderList(filterTrainers(allTrainers, trainerSearchEl ? trainerSearchEl.value : ''));
       });
   }

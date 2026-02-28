@@ -15,7 +15,6 @@ module.exports = {
         'http://127.0.0.1:5500',
       ],
 
-  useDummyData: process.env.USE_DUMMY_DATA === 'true' || process.env.USE_DUMMY_DATA === '1' || !!process.env.VERCEL || !!process.env.NETLIFY || !!process.env.RENDER,
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 3306,
@@ -51,5 +50,20 @@ module.exports = {
     refreshToken: process.env.ZOHO_REFRESH_TOKEN,
     crmOrgId: process.env.ZOHO_CRM_ORG_ID,
     calendarId: process.env.ZOHO_CALENDAR_ID || '',
+    accountsBase: process.env.ZOHO_ACCOUNTS_BASE || 'https://accounts.zoho.com',
+    apiBase: process.env.ZOHO_API_BASE || 'https://www.zohoapis.com',
+    booksOrgId: process.env.ZOHO_BOOKS_ORG_ID || '',
+    booksCustomerId: process.env.ZOHO_BOOKS_CUSTOMER_ID || '',
+    cliqWebhookUrl: process.env.ZOHO_CLIQ_WEBHOOK_URL || '',
+    mailAccountId: process.env.ZOHO_MAIL_ACCOUNT_ID || '',
+    mailFrom: process.env.ZOHO_MAIL_FROM || '',
+    signTemplateId: process.env.ZOHO_SIGN_TEMPLATE_ID || '',
+    signActionId: process.env.ZOHO_SIGN_ACTION_ID || '',
+    workdriveTeamId: process.env.ZOHO_WORKDRIVE_TEAM_ID || '',
+    meetingZsoid: process.env.ZOHO_MEETING_ZSOID || '',
+    meetingTimezone: process.env.ZOHO_MEETING_TIMEZONE || 'Asia/Kolkata',
+    deskOrgId: process.env.ZOHO_DESK_ORG_ID || '',
+    deskDepartmentId: process.env.ZOHO_DESK_DEPARTMENT_ID || '',
+    analyticsWorkspaceId: process.env.ZOHO_ANALYTICS_WORKSPACE_ID || '',
   },
 };

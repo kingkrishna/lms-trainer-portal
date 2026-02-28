@@ -129,9 +129,6 @@
   <script src="js/nav-connect.js"></script>
   <script>
     (function(){
-      var demo = null;
-      try { demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null'); } catch (_) {}
-      if (demo && demo.role === 'trainer') { window.location.replace('dashboard.html'); return; }
       if (window.api && window.api.isLoggedIn()) {
         window.api.get('/auth/me').then(function(d){ if(d.user&&d.user.role==='trainer') window.location.replace('dashboard.html'); }).catch(function(){});
       }

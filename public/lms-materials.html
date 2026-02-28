@@ -32,6 +32,7 @@
       <span id="breadcrumbCourse">Materials</span>
     </nav>
     <h1 class="h3 mb-3" id="pageTitle">Course materials</h1>
+    <div id="progressBox" class="alert alert-info py-2 d-none"></div>
     <div id="materialsList" class="list-group">
       <p class="text-muted">Loading...</p>
     </div>
@@ -47,6 +48,7 @@
       const listEl = document.getElementById('materialsList');
       const titleEl = document.getElementById('pageTitle');
       const breadcrumbEl = document.getElementById('breadcrumbCourse');
+      const progressEl = document.getElementById('progressBox');
 
       if (!slug) {
         listEl.innerHTML = '<p class="text-muted">No course selected. <a href="courses.html">Browse courses</a></p>';
@@ -55,27 +57,64 @@
 
       function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
 
-      window.api.get('/lms/courses/' + encodeURIComponent(slug) + '/materials')
+      function loadProgress(enrollmentId) {
+        return window.api.get('/enrollments/' + encodeURIComponent(enrollmentId) + '/progress')
+          .then(function (p) {
+            progressEl.classList.remove('d-none');
+            progressEl.textContent = 'Progress: ' + (p.completed_materials || 0) + '/' + (p.total_materials || 0) + ' materials (' + (p.completion_pct || 0) + '%)';
+          }).catch(function () {});
+      }
+
+      window.api.get('/enrollments/my')
         .then(function (data) {
-          const materials = data.materials || [];
-          breadcrumbEl.textContent = slug.replace(/-/g, ' ');
+          const enrollments = data.enrollments || [];
+          const enrollment = enrollments.find(function (e) { return (e.course_slug || '') === slug; });
+          if (!enrollment) throw new Error('Not enrolled');
+          breadcrumbEl.textContent = enrollment.course_title || slug.replace(/-/g, ' ');
+          titleEl.textContent = (enrollment.course_title || 'Course') + ' materials';
+          return window.api.get('/enrollments/' + encodeURIComponent(enrollment.id) + '/materials')
+            .then(function (resp) { return { materials: resp.materials || [], enrollmentId: enrollment.id }; });
+        })
+        .then(function (ctx) {
+          const materials = ctx.materials || [];
+          const enrollmentId = ctx.enrollmentId;
+          loadProgress(enrollmentId);
           if (materials.length === 0) {
             listEl.innerHTML = '<p class="text-muted">No materials added yet. Check back soon.</p>';
             return;
           }
           listEl.innerHTML = materials.map(function (m) {
             const icon = m.type === 'video' ? '🎬' : m.type === 'document' ? '📄' : m.type === 'link' ? '🔗' : '📅';
-            const url = m.url_or_content || '#';
-            const isLink = url.startsWith('http') || m.type === 'link';
+            const isLink = (m.url_or_content || '').startsWith('http') || m.type === 'link';
             return '<div class="list-group-item d-flex align-items-center">' +
               '<span class="me-3">' + icon + '</span>' +
               '<div class="flex-grow-1"><strong>' + escapeHtml(m.title) + '</strong> <span class="badge bg-secondary ms-2">' + escapeHtml(m.type) + '</span></div>' +
-              (isLink ? '<a href="' + escapeHtml(url) + '" target="_blank" class="btn btn-sm btn-outline-primary">Open</a>' : '<span class="text-muted">' + escapeHtml(url) + '</span>') +
+              (isLink
+                ? '<a href="' + escapeHtml(m.url_or_content || '#') + '" target="_blank" class="btn btn-sm btn-outline-primary me-2">Open</a>'
+                : '<button type="button" class="btn btn-sm btn-outline-primary me-2" data-access-id="' + escapeHtml(m.id) + '">Open</button>') +
+              '<button type="button" class="btn btn-sm btn-success" data-progress-id="' + escapeHtml(m.id) + '">Mark complete</button>' +
               '</div>';
           }).join('');
+          listEl.querySelectorAll('[data-access-id]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var materialId = btn.getAttribute('data-access-id');
+              window.api.get('/enrollments/' + encodeURIComponent(enrollmentId) + '/materials/' + encodeURIComponent(materialId) + '/access')
+                .then(function (a) {
+                  if (a.access_url) window.open(a.access_url, '_blank');
+                }).catch(function () { alert('Could not open material'); });
+            });
+          });
+          listEl.querySelectorAll('[data-progress-id]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var materialId = btn.getAttribute('data-progress-id');
+              window.api.post('/enrollments/' + encodeURIComponent(enrollmentId) + '/progress', { materialId: materialId })
+                .then(function () { loadProgress(enrollmentId); })
+                .catch(function () { alert('Could not update progress'); });
+            });
+          });
         })
         .catch(function () {
-          listEl.innerHTML = '<p class="text-muted">Could not load materials. <a href="dashboard.html">Back to dashboard</a></p>';
+          listEl.innerHTML = '<p class="text-muted">Could not load materials. Ensure you are enrolled. <a href="dashboard.html">Back to dashboard</a></p>';
         });
     })();
   </script>

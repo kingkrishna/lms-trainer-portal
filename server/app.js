@@ -14,7 +14,15 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 app.use(cors({
-  origin: config.env === 'production' ? config.frontendUrl : config.corsOrigins,
+  origin: config.env === 'production'
+    ? function (origin, cb) {
+        // Same-origin requests may omit Origin; allow our frontend or reflect request origin
+        const base = (config.frontendUrl || '').replace(/\/$/, '');
+        if (!origin) return cb(null, true); // same-origin, no Origin header
+        if (base && (origin === base || origin.startsWith(base + '/'))) return cb(null, true);
+        return cb(null, base || origin);
+      }
+    : config.corsOrigins,
   credentials: true,
 }));
 app.use(generalLimiter);

@@ -323,6 +323,12 @@
   margin-bottom: 1rem;
 }
 
+.hero-cta-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
 .btn-hero-primary {
   background: var(--vc-gradient);
   color: #fff !important;

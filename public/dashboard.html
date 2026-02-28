@@ -125,7 +125,6 @@
   <script>
     document.getElementById('btnLogout').addEventListener('click', async (e) => {
       e.preventDefault();
-      try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
       try { await window.api.post('/auth/logout'); } catch (_) {}
       window.location.href = 'index.html';
     });
@@ -134,12 +133,8 @@
     const enrollForm = document.getElementById('enrollTraineeForm');
     const enrollCourseSelect = document.getElementById('enrollCourseSelect');
     const enrollError = document.getElementById('enrollTraineeError');
-    const FALLBACK_COURSES = [
-      { id: 'acc-school', title: 'Accounting School' }, { id: 'tax-school', title: 'Tax School' }, { id: 'tax-writing', title: 'Tax Writing' },
-      { id: 'technical-writing', title: 'Technical Writing' }, { id: 'java-course', title: 'Java Course' }, { id: 'core-accounting', title: 'Core Accounting' }, { id: 'tally', title: 'Tally' },
-    ];
     function populateCourseSelect(courses) {
-      const list = (courses && courses.length) ? courses : FALLBACK_COURSES;
+      const list = Array.isArray(courses) ? courses : [];
       if (enrollCourseSelect) {
         enrollCourseSelect.innerHTML = list.map(function (c) {
           return '<option value="' + (c.id || '') + '">' + (c.title || c.id) + '</option>';

@@ -137,25 +137,7 @@
     }
 
     function loadProfile() {
-      let demo = null;
-      try {
-        demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null');
-      } catch (_) {}
-
-      if (demo && demo.email) {
-        document.getElementById('profileName').value = demo.full_name || '';
-        document.getElementById('profileEmail').value = demo.email || '';
-        document.getElementById('profilePhone').value = '';
-        document.getElementById('profileAddress').value = '';
-        document.getElementById('profileCompany').value = demo.company_name || '';
-        document.getElementById('profileContact').value = '';
-        document.getElementById('profileBio').value = '';
-        document.getElementById('profileSkills').value = (demo.skills && Array.isArray(demo.skills) ? demo.skills.join(', ') : (demo.skills || ''));
-        toggleRoleFields(demo.role || 'student');
-        return;
-      }
-
-      window.api.get('/auth/me').then(function (data) {
+      window.api.get('/users/me').then(function (data) {
         const u = data.user;
         const p = data.profile || {};
         document.getElementById('profileEmail').value = u.email || '';
@@ -192,7 +174,12 @@
 
     document.getElementById('profileResume').addEventListener('change', function () {
       const file = this.files[0];
-      if (file) form.dataset.resumeUrl = 'uploaded';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        form.dataset.resumeUrl = reader.result;
+      };
+      reader.readAsDataURL(file);
     });
 
     imgInput.addEventListener('change', function () {
@@ -248,25 +235,8 @@
         body.bio = document.getElementById('profileBio').value.trim() || undefined;
       }
 
-      let demo = null;
       try {
-        demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null');
-      } catch (_) {}
-
-      if (demo && demo.email) {
-        demo.full_name = body.full_name || demo.full_name;
-        demo.phone = body.phone;
-        demo.address = body.address;
-        demo.company_name = body.company_name || demo.company_name;
-        if (body.skills) demo.skills = body.skills;
-        if (body.resume_url) demo.resume_url = body.resume_url;
-        try { localStorage.setItem('lms_demo_user', JSON.stringify(demo)); } catch (_) {}
-        showMsg(successEl, 'Profile saved (demo mode).', false);
-        return;
-      }
-
-      try {
-        await window.api.patch('/auth/profile', body);
+        await window.api.patch('/users/me', body);
         showMsg(successEl, 'Profile updated successfully.', false);
       } catch (err) {
         showMsg(errEl, err.error || 'Failed to update profile', true);
@@ -275,7 +245,6 @@
 
     document.getElementById('btnLogout').addEventListener('click', async function (e) {
       e.preventDefault();
-      try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
       try { await window.api.post('/auth/logout'); } catch (_) {}
       window.location.href = 'index.html';
     });

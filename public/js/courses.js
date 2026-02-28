@@ -1,7 +1,5 @@
 /**
- * Courses page: Accounting School / Tax School with
- * Individual, Combo, and Total Package selections.
- * When ?filter=my, shows only courses the logged-in student has enrolled in.
+ * Courses page (API-backed only).
  */
 
 (function () {
@@ -15,145 +13,11 @@
   const coursesToolbar = document.querySelector('.courses-toolbar');
   const coursesTabs = document.querySelector('.courses-tabs');
   const coursesPackageTabs = document.querySelector('.courses-package-tabs');
-
   if (!courseListEl) return;
 
   const urlParams = new URLSearchParams(location.search);
   const isMyCourses = urlParams.get('filter') === 'my';
-
-  // Course catalog based on requested structure
-  const DEMO_COURSES = [
-    {
-      id: 'core-accounting',
-      title: 'Core Accounting',
-      slug: 'core-accounting',
-      school: 'accounting',
-      package_type: 'individual',
-      duration: '15 Working Days',
-      price: 3600,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'Accounting fundamentals with practical workflow.'
-    },
-    {
-      id: 'zoho-books',
-      title: 'Zoho Books',
-      slug: 'zoho-books',
-      school: 'accounting',
-      package_type: 'individual',
-      duration: '15 Working Days',
-      price: 5000,
-      certifications: ['Basic Certification from Vision Connects', 'Zoho Certification - 2,500'],
-      description: 'Zoho books operations and business accounting.'
-    },
-    {
-      id: 'tally',
-      title: 'Tally',
-      slug: 'tally',
-      school: 'accounting',
-      package_type: 'individual',
-      duration: '30 Working Days',
-      price: 5000,
-      certifications: ['Tally Certification'],
-      description: 'Hands-on Tally training for accounting execution.'
-    },
-    {
-      id: 'income-tax-tds',
-      title: 'Income Tax and TDS',
-      slug: 'income-tax-tds',
-      school: 'tax',
-      package_type: 'individual',
-      duration: '20 Working Days',
-      price: 3600,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'Income tax concepts, filing process, and TDS compliance.'
-    },
-    {
-      id: 'gst-theory-simulation',
-      title: 'GST Theory and Simulation',
-      slug: 'gst-theory-simulation',
-      school: 'tax',
-      package_type: 'individual',
-      duration: '15 Working Days',
-      price: 5000,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'GST concepts plus simulation-based practical sessions.'
-    },
-    {
-      id: 'gst-simulation',
-      title: 'GST Simulation',
-      slug: 'gst-simulation',
-      school: 'tax',
-      package_type: 'individual',
-      duration: '15 Working Days',
-      price: 3600,
-      certifications: ['Tally Certification for GST Simulation'],
-      description: 'GST simulation for real transaction scenarios.'
-    },
-    {
-      id: 'combo-accounting',
-      title: 'Core Accounting, Tally and Zoho',
-      slug: 'combo-accounting-tally-zoho',
-      school: 'accounting',
-      package_type: 'combo',
-      duration: '30-45 Working Days',
-      price: 10000,
-      certifications: [
-        'Certificate from Vision Connects',
-        'Tally Certification',
-        'Zoho Certification (extra 2,500 for Zoho Certification)'
-      ],
-      description: 'Accounting plus tools combo for practical job readiness.'
-    },
-    {
-      id: 'combo-tax',
-      title: 'Tax (GST, Income Tax and TDS) including Simulation',
-      slug: 'combo-tax-school',
-      school: 'tax',
-      package_type: 'combo',
-      duration: '30-45 Working Days',
-      price: 12000,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'Complete tax combo with GST, Income Tax, TDS, and simulation.'
-    },
-    {
-      id: 'technical-writing',
-      title: 'Technical Writing',
-      slug: 'technical-writing',
-      school: 'technical',
-      package_type: 'individual',
-      duration: '20 Working Days',
-      price: 12000,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'Professional writing for reports, documentation, and business communication.'
-    },
-    {
-      id: 'java-course',
-      title: 'Java Course',
-      slug: 'java-course',
-      school: 'technical',
-      package_type: 'individual',
-      duration: '30 Working Days',
-      price: 10000,
-      certifications: ['Certificate from Vision Connects'],
-      description: 'Java fundamentals to advanced concepts with practical coding assignments.'
-    },
-    {
-      id: 'total-course-package',
-      title: 'Total Course Package',
-      slug: 'total-course-package',
-      school: 'all',
-      package_type: 'package',
-      duration: '3-4 Months',
-      price: 25000,
-      certifications: [
-        'Certificate from Vision Connects',
-        'Tally Certification',
-        'Zoho Certification',
-        'Zoho Business Communication Certification'
-      ],
-      description: 'Full package that combines accounting and tax tracks.'
-    }
-  ];
+  let COURSE_CATALOG = [];
 
   function formatPrice(amount) {
     return '₹' + Number(amount).toLocaleString('en-IN');
@@ -161,9 +25,7 @@
 
   function renderFlyer(course) {
     const priceText = course.price != null ? formatPrice(course.price) : 'Price on request';
-    const certs = (course.certifications || []).map(function (cert) {
-      return '<li>' + escapeHtml(cert) + '</li>';
-    }).join('');
+    const certs = (course.certifications || []).map(function (cert) { return '<li>' + escapeHtml(cert) + '</li>'; }).join('');
     const badge = '<span class="course-flyer-badge">' + escapeHtml(getPackageLabel(course.package_type)) + '</span>';
     const slug = course.slug || course.id;
     return (
@@ -179,7 +41,7 @@
             '<div class="course-flyer-meta">' +
               '<span><strong>Duration:</strong> ' + escapeHtml(course.duration || '-') + '</span>' +
               '<span><strong>Certification:</strong></span>' +
-              '<ul class="course-flyer-certs">' + certs + '</ul>' +
+              '<ul class="course-flyer-certs">' + (certs || '<li>-</li>') + '</ul>' +
             '</div>' +
             '<div class="course-flyer-footer">' +
               '<span class="course-flyer-price price-display">' + escapeHtml(priceText) + '</span>' +
@@ -250,9 +112,7 @@
 
   function applyFilters() {
     if (sectionTitleEl) {
-      sectionTitleEl.textContent = activeSchool === 'tax'
-        ? 'Tax School'
-        : (activeSchool === 'technical' ? 'Technicial Courses' : 'Accounting School');
+      sectionTitleEl.textContent = activeSchool === 'tax' ? 'Tax School' : (activeSchool === 'technical' ? 'Technical Courses' : 'Accounting School');
     }
     if (sectionDescEl) {
       sectionDescEl.textContent = activePackage === 'individual'
@@ -263,9 +123,7 @@
     }
 
     const q = courseSearchEl ? courseSearchEl.value : '';
-    const base = DEMO_COURSES.filter(function (c) {
-      return (c.school === activeSchool || c.school === 'all') && c.package_type === activePackage;
-    });
+    const base = COURSE_CATALOG.filter(function (c) { return (c.school === activeSchool || c.school === 'all') && c.package_type === activePackage; });
     renderList(filterCourses(base, q, activeSchool, activePackage));
   }
 
@@ -330,7 +188,7 @@
       sectionDescEl.innerHTML = 'Courses you have enrolled in. <a href="courses.html">Browse all courses</a>';
     }
 
-    window.api.get('/student/my-enrollments').then(function (data) {
+    window.api.get('/enrollments/my').then(function (data) {
       const enrollments = data.enrollments || [];
       const seen = {};
       const myCourses = [];
@@ -338,7 +196,7 @@
         const slug = (e.course_slug || e.course_id || '').toLowerCase().replace(/_/g, '-');
         if (seen[slug]) return;
         seen[slug] = true;
-        const found = DEMO_COURSES.find(function (c) {
+        const found = COURSE_CATALOG.find(function (c) {
           const cid = (c.id || c.slug || '').toLowerCase().replace(/_/g, '-');
           return cid === slug;
         });
@@ -361,16 +219,58 @@
       renderList(myCourses);
     }).catch(function () {
       if (coursesSectionEmptyEl) coursesSectionEmptyEl.textContent = 'Could not load your courses. Please try again.';
-      coursesSectionEmptyEl.classList.remove('d-none');
+      if (coursesSectionEmptyEl) coursesSectionEmptyEl.classList.remove('d-none');
       courseListEl.innerHTML = '';
     });
   }
 
-  if (isMyCourses) {
-    loadMyCourses();
-  } else {
-    setActiveSchool(urlSchool);
-    setActivePackage('individual');
-    applyFilters();
+  function inferSchool(slug) {
+    const s = String(slug || '').toLowerCase();
+    if (s.includes('tax') || s.includes('gst') || s.includes('tds')) return 'tax';
+    if (s.includes('java') || s.includes('technical')) return 'technical';
+    return 'accounting';
   }
+
+  function inferPackageType(title, slug) {
+    const t = (String(title || '') + ' ' + String(slug || '')).toLowerCase();
+    if (t.includes('combo')) return 'combo';
+    if (t.includes('package')) return 'package';
+    return 'individual';
+  }
+
+  function loadCatalog() {
+    if (typeof window.api === 'undefined') {
+      COURSE_CATALOG = [];
+      return Promise.resolve();
+    }
+    return window.api.get('/courses').then(function (data) {
+      const courses = data.courses || [];
+      COURSE_CATALOG = courses.map(function (c) {
+        const slug = c.slug || c.id;
+        return {
+          id: c.id,
+          title: c.title || 'Untitled course',
+          slug: slug,
+          school: inferSchool(slug),
+          package_type: inferPackageType(c.title, slug),
+          duration: c.duration || '-',
+          price: c.price,
+          certifications: [],
+          description: c.description || '',
+        };
+      });
+    }).catch(function () {
+      COURSE_CATALOG = [];
+    });
+  }
+
+  loadCatalog().then(function () {
+    if (isMyCourses) {
+      loadMyCourses();
+    } else {
+      setActiveSchool(urlSchool);
+      setActivePackage('individual');
+      applyFilters();
+    }
+  });
 })();

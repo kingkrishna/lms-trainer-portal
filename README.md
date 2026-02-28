@@ -59,7 +59,7 @@ npm install
 
 - Create a MySQL (or compatible) database, e.g. `lms_platform`.
 - Copy `.env.example` to `.env` and set `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, and `JWT_SECRET` (min 32 characters).
-- Set `USE_DUMMY_DATA=false` to use the real database (otherwise the app uses in-memory demo data).
+- Ensure `DB_*` values are valid before starting the server.
 
 ### 3. Run schema and seed
 
@@ -68,7 +68,7 @@ npm run db:migrate   # applies schema + migrations
 npm run db:seed      # seeds demo users, courses, trainers, jobs
 ```
 
-Demo credentials: `admin@visionconnects.com`, `demo-student@visionconnects.com`, `demo-trainer@visionconnects.com`, `demo-recruiter@visionconnects.com` — password: `password123`
+Seeded QA credentials: `admin@visionconnects.com`, `demo-student@visionconnects.com`, `demo-trainer@visionconnects.com`, `demo-recruiter@visionconnects.com` — password: `password123`
 
 ### 4. Start server
 
@@ -113,6 +113,13 @@ See `docs/SECURITY_PLAN.md` and `docs/API_CONTRACTS.md` for full details.
 
 See `.env.example`. Required: `DB_*`, `JWT_SECRET`. For payments add Razorpay/Stripe keys and webhook secrets. For Zoho add client credentials and refresh token.
 
+If payment gateway keys are not configured, payment APIs return `PAYMENT_NOT_CONFIGURED`. Super admins can settle pending payments manually via admin payment settlement endpoints.
+
+Zoho sync currently runs from backend events:
+- Auth register/login/profile update -> Zoho CRM contact upsert
+- Payment verification/manual settlement -> Zoho Books invoice push (when `ZOHO_BOOKS_ORG_ID` and `ZOHO_BOOKS_CUSTOMER_ID` are configured)
+- Admin trainer approval/payment settlement -> Zoho Cliq notifications (when `ZOHO_CLIQ_WEBHOOK_URL` is configured)
+
 ## Deploy to Render (one-click)
 
 The repo includes `render.yaml` for one-click deployment.
@@ -121,9 +128,13 @@ The repo includes `render.yaml` for one-click deployment.
 2. Click **New** → **Blueprint**.
 3. Connect the `lms-trainer-portal` repo.
 4. Render will use `render.yaml` — click **Apply**.
-5. The app deploys with dummy data (no database). Add `DB_*`, `RAZORPAY_*`, etc. in the Render dashboard if needed.
+5. Add required env vars in Render (`DB_*`, `JWT_SECRET`, `FRONTEND_URL`, and optional `RAZORPAY_*`).
 
 Live URL: `https://lms-trainer-portal.onrender.com` (or similar).
+
+## Deploy on Windows (no Linux)
+
+Use the Windows-first deployment guide in `DEPLOY.md` (PM2 + IIS ARR/Nginx for Windows).
 
 ## Deploy to Vercel
 
@@ -137,11 +148,9 @@ Live URL: `https://lms-trainer-portal.onrender.com` (or similar).
 
 3. **Environment variables** (Vercel Dashboard → Project → Settings → Environment Variables):
    - `JWT_SECRET` – required (min 32 characters)
-   - `USE_DUMMY_DATA` – set to `true` to run without MySQL (default on Vercel)
    - `FRONTEND_URL` – optional; defaults to your Vercel URL
    - For MySQL: add `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
-
-4. On Vercel, the app uses **in-memory demo data** by default (no database needed). Set `USE_DUMMY_DATA=false` and add DB vars to use a real database.
+4. This app is database-backed only; configure DB vars before using protected features.
 
 ## License
 

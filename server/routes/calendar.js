@@ -4,6 +4,7 @@
  */
 const express = require('express');
 const config = require('../config');
+const db = require('../db/connection');
 
 const router = express.Router();
 
@@ -25,11 +26,24 @@ router.get('/group-slots', async (req, res) => {
   }
 
   try {
-    if (config.zoho?.calendarId && config.zoho?.clientId && config.zoho?.refreshToken) {
-      // Zoho Calendar API integration – requires OAuth token from client_id + refresh_token
-      // Calendar ID stored: config.zoho.calendarId
-      // TODO: Exchange refresh_token for access_token, call freebusy API
-      // GET https://calendar.zoho.com/api/v1/calendars/{calendarId}/freebusy
+    const trainerRow = await db.queryOne('SELECT id FROM trainers WHERE slug = ? OR id = ?', [trainer, trainer]);
+    if (trainerRow) {
+      const rows = await db.query(
+        `SELECT start_time, duration_minutes
+         FROM trainer_sessions
+         WHERE trainer_id = ? AND status = 'scheduled' AND start_time >= NOW()
+         ORDER BY start_time ASC
+         LIMIT 20`,
+        [trainerRow.id]
+      );
+      if (Array.isArray(rows) && rows.length > 0) {
+        const slots = rows.map((r) => {
+          const d = new Date(r.start_time);
+          const end = new Date(d.getTime() + Number(r.duration_minutes || 60) * 60000);
+          return `${d.toLocaleString()} - ${end.toLocaleTimeString()}`;
+        });
+        return res.json({ slots, source: 'trainer_sessions' });
+      }
     }
     res.json({ slots: FALLBACK_GROUP_SLOTS, source: 'default' });
   } catch (err) {

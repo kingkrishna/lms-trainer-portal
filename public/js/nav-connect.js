@@ -35,7 +35,6 @@
         loginLink.parentNode.insertBefore(accountEl, loginLink);
         accountEl.querySelector('#btnNavLogout').addEventListener('click', function (e) {
           e.preventDefault();
-          try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
           if (window.api && window.api.post) window.api.post('/auth/logout').catch(function () {});
           window.location.href = 'index.html';
         });

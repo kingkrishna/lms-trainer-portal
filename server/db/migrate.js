@@ -34,7 +34,20 @@ async function run() {
   try {
     const schemaPath = path.join(__dirname, '../../database/schema.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-    await conn.query(schemaSql);
+    const schemaStmts = schemaSql.split(/;\s*$/m).filter((s) => s.trim());
+    for (const stmt of schemaStmts) {
+      const s = stmt.trim();
+      if (!s) continue;
+      try {
+        await conn.query(s + (s.endsWith(';') ? '' : ';'));
+      } catch (err) {
+        if (shouldIgnore(err)) {
+          console.log(`Skipped (already applied): schema.sql - ${err.message.slice(0, 60)}`);
+        } else {
+          throw err;
+        }
+      }
+    }
     console.log('Schema applied.');
 
     const files = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();

@@ -72,7 +72,7 @@
             var data = {};
             try { data = text ? JSON.parse(text) : {}; } catch (_) {}
             if (!r.ok) {
-              if (!data.error && (r.status === 404 || r.status === 502)) data.error = 'Backend not available. Use demo login below.';
+              if (!data.error && (r.status === 404 || r.status === 502)) data.error = 'Backend not available. Use email/password login.';
               throw data;
             }
             onSuccess(data);
@@ -80,8 +80,8 @@
         })
         .catch(function (err) {
           var msg = (err && err.error) || (err && err.message) || 'Google sign-in failed';
-          if (err && (err.status === 0 || err.message === 'Failed to fetch')) msg = 'Backend not available. Use demo login or email/password.';
-          if (err && (err.message && err.message.includes('JSON'))) msg = 'Backend not available. Google sign-in needs the server running. Use demo login below.';
+          if (err && (err.status === 0 || err.message === 'Failed to fetch')) msg = 'Backend not available. Use email/password login.';
+          if (err && (err.message && err.message.includes('JSON'))) msg = 'Backend not available. Google sign-in needs the server running.';
           onError(msg);
         });
     }
@@ -105,7 +105,7 @@
 
     function showServerRequired() {
       var container = document.getElementById('googleSignInContainer');
-      if (container) container.innerHTML = '<p class="small text-muted">Google sign-in requires the server. Run <code>npm start</code> and open <a href="/login">localhost:3000/login</a>. Or use demo/email login.</p>';
+      if (container) container.innerHTML = '<p class="small text-muted">Google sign-in requires the server. Run <code>npm start</code> and open <a href="/login">localhost:3000/login</a>.</p>';
     }
   };
 })();

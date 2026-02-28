@@ -4,7 +4,6 @@
 const express = require('express');
 const { body } = require('express-validator');
 const db = require('../db/connection');
-const config = require('../config');
 const { authenticate, requireRole } = require('../middleware/auth');
 const { handleValidation } = require('../middleware/validate');
 
@@ -13,46 +12,35 @@ const router = express.Router();
 // GET /student/my-enrollments – courses the logged-in student has registered for
 router.get('/my-enrollments', authenticate, async (req, res) => {
   try {
-    let studentName = req.user.email || '';
-    try {
-      const profile = await db.queryOne('SELECT * FROM students WHERE user_id = ?', [db.toBuffer(req.user.id)]);
-      if (profile) studentName = profile.full_name || studentName;
-      else {
-        const tProfile = await db.queryOne('SELECT * FROM trainers WHERE user_id = ?', [db.toBuffer(req.user.id)]);
-        if (tProfile) studentName = tProfile.full_name || studentName;
-      }
-    } catch (_) {}
-    if (!studentName) return res.json({ enrollments: [] });
+    const student = await db.queryOne('SELECT id, full_name FROM students WHERE user_id = ?', [db.toBuffer(req.user.id)]);
+    if (!student) return res.json({ enrollments: [] });
 
-    const config = require('../config');
-    let rows = [];
-    if (config.useDummyData) {
-      rows = await db.query('SELECT * FROM trainer_trainees WHERE student_name = ?', [studentName]);
-    } else {
-      rows = await db.query('SELECT * FROM trainer_trainees WHERE student_name = ? ORDER BY created_at DESC', [studentName]);
-    }
-    const courses = await db.query('SELECT id, title, slug, price FROM courses WHERE is_active = 1');
-    const trainersList = await db.query('SELECT id, slug, full_name FROM trainers ORDER BY full_name');
-    const courseMap = (courses || []).reduce((m, c) => { const cid = toHex(c.id); m[cid] = m[c.slug] = c; return m; }, {});
-    const trainerMap = (trainersList || []).reduce((m, t) => { const tid = toHex(t.id); m[tid] = m[t.slug] = t; return m; }, {});
+    const rows = await db.query(
+      `SELECT e.id, e.course_id, e.trainer_id, e.status, e.enrolled_at, c.title AS course_title, c.slug AS course_slug,
+              t.full_name AS trainer_name, p.status AS payment_status
+       FROM enrollments e
+       JOIN courses c ON e.course_id = c.id
+       JOIN trainers t ON e.trainer_id = t.id
+       JOIN payments p ON e.payment_id = p.id
+       WHERE e.student_id = ?
+       ORDER BY e.enrolled_at DESC`,
+      [student.id]
+    );
 
-    const enrollments = (rows || []).map((r) => {
-      const tid = toHex(r.trainer_id);
-      const course = courseMap[r.course_id] || courseMap[r.course_id?.replace(/-/g, '_')] || { title: r.course_id, slug: r.course_id };
-      const trainer = trainerMap[tid] || { full_name: 'Trainer' };
-      return {
-        id: toHex(r.id),
-        course_id: r.course_id,
-        course_title: course.title || r.course_id,
-        course_slug: course.slug || r.course_id,
-        trainer_name: trainer.full_name,
-        payment_status: r.payment_status || 'pending',
-      };
-    });
+    const enrollments = (rows || []).map((r) => ({
+      id: toHex(r.id),
+      course_id: toHex(r.course_id),
+      course_title: r.course_title || '',
+      course_slug: r.course_slug || '',
+      trainer_name: r.trainer_name || '',
+      payment_status: r.payment_status || 'pending',
+      status: r.status || 'active',
+      enrolled_at: r.enrolled_at,
+    }));
     res.json({ enrollments });
   } catch (err) {
     console.error('My enrollments error:', err);
-    res.json({ enrollments: [] });
+    res.status(500).json({ error: 'Failed to fetch enrollments' });
   }
 });
 
@@ -62,12 +50,6 @@ function toHex(v) {
 }
 
 async function resolveTrainerId(trainerSlug) {
-  if (config.useDummyData) {
-    const memoryStore = require('../db/memoryStore');
-    const trainers = await db.query('SELECT id, slug FROM trainers ORDER BY full_name');
-    const t = (trainers || []).find((x) => x.slug === trainerSlug || toHex(x.id) === trainerSlug);
-    return t ? toHex(t.id) : null;
-  }
   const row = await db.queryOne('SELECT id FROM trainers WHERE slug = ? OR id = ?', [trainerSlug, trainerSlug]);
   return row ? toHex(row.id) : null;
 }

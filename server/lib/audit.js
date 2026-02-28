@@ -1,5 +1,4 @@
 const db = require('../db/connection');
-const config = require('../config');
 
 function toHex(v) {
   if (Buffer.isBuffer(v)) return v.toString('hex');
@@ -7,7 +6,6 @@ function toHex(v) {
 }
 
 async function log(action, resourceType, resourceId, oldValue, newValue, userId, req) {
-  if (config.useDummyData) return;
   try {
     const userIdBuf = userId ? (Buffer.isBuffer(userId) ? userId : require('../db/connection').toBuffer(userId)) : null;
     const ip = req?.ip || req?.connection?.remoteAddress || null;

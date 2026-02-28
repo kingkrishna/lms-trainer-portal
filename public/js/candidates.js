@@ -12,14 +12,6 @@
 
   if (!resultsEl) return;
 
-  var DEMO_CANDIDATES = [
-    { id: 'cd-1', full_name: 'Ananya Gupta', course: 'Financial Accounting', grade: 'A+', city: 'Mumbai', skills: ['Tally', 'GST', 'Bookkeeping'] },
-    { id: 'cd-2', full_name: 'Rohit Nair', course: 'Taxation', grade: 'A', city: 'Bangalore', skills: ['Income Tax', 'GST Filing', 'Excel'] },
-    { id: 'cd-3', full_name: 'Divya Sharma', course: 'Auditing & Assurance', grade: 'A', city: 'Delhi NCR', skills: ['Audit', 'Financial Statements', 'Excel'] },
-    { id: 'cd-4', full_name: 'Karthik Rao', course: 'Corporate Finance', grade: 'B+', city: 'Chennai', skills: ['Financial Modeling', 'MIS', 'Power BI'] },
-    { id: 'cd-5', full_name: 'Pooja Iyer', course: 'Bookkeeping & Payroll', grade: 'A', city: 'Hyderabad', skills: ['Payroll', 'Tally', 'Reconciliation'] },
-  ];
-
   function escapeHtml(text) {
     if (!text) return '';
     var div = document.createElement('div');
@@ -96,7 +88,8 @@
       '</div>';
 
     if (!window.api) {
-      renderCandidates(localFilter(DEMO_CANDIDATES, skills, course));
+      resultsEl.innerHTML = '<div class="alert alert-danger">API client not available.</div>';
+      updateCount(0);
       return;
     }
 
@@ -115,7 +108,7 @@
           }));
           return;
         }
-        renderCandidates(localFilter(DEMO_CANDIDATES, skills, course));
+        renderCandidates([]);
       })
       .catch(function (err) {
         if (err && err.status === 403) {
@@ -123,7 +116,8 @@
           updateCount(0);
           return;
         }
-        renderCandidates(localFilter(DEMO_CANDIDATES, skills, course));
+        resultsEl.innerHTML = '<div class="alert alert-danger">Failed to load candidates.</div>';
+        updateCount(0);
       });
   }
 
@@ -132,14 +126,13 @@
     btnResetEl.addEventListener('click', function () {
       if (searchSkillsEl) searchSkillsEl.value = '';
       if (searchCourseEl) searchCourseEl.value = '';
-      renderCandidates(DEMO_CANDIDATES);
+      renderCandidates([]);
     });
   }
 
   if (btnLogoutEl) {
     btnLogoutEl.addEventListener('click', function (e) {
       e.preventDefault();
-      try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
       if (window.api && window.api.post) {
         window.api.post('/auth/logout').finally(function () {
           window.location.href = 'index.html';
@@ -150,5 +143,5 @@
     });
   }
 
-  renderCandidates(DEMO_CANDIDATES);
+  renderCandidates([]);
 })();

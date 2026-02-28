@@ -2,7 +2,7 @@
  * Seed database with demo users, courses, trainers, jobs.
  * Run after: npm run db:migrate
  * Usage: node database/seed.js
- * Requires: USE_DUMMY_DATA=false, DB_* env vars set
+ * Requires: DB_* env vars set
  */
 const fs = require('fs');
 const path = require('path');

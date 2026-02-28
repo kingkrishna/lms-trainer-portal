@@ -92,11 +92,6 @@
             <div id="googleSignInBtn"></div>
           </div>
           <div id="registerError" class="alert alert-danger d-none mt-3" role="alert"></div>
-          <div id="registerDemo" class="d-none mt-3 p-3 rounded" style="background:var(--vc-accent-bg);border:1px solid var(--vc-border);">
-            <p class="mb-2 small">You can still use the dashboard with a demo account—no server required.</p>
-            <p class="mb-2 small text-muted">Or <a href="login.html">log in</a> with demo: Student, Trainer, Recruiter, Admin</p>
-            <button type="button" class="btn btn-primary" id="btnDemoMode">Continue in demo mode</button>
-          </div>
           <button type="submit" class="btn btn-register-submit w-100 mt-4">Sign up</button>
         </form>
         <p class="register-footer-text">Already have an account? <a href="login.html">Log in</a></p>
@@ -155,34 +150,9 @@
         errEl.classList.remove('d-none');
       },
     });
-    const demoEl = document.getElementById('registerDemo');
-    const btnDemo = document.getElementById('btnDemoMode');
-
-    function saveDemoAndRedirect(fd) {
-      const role = fd.get('role') || 'student';
-      const demo = {
-        email: fd.get('email') || 'demo@example.com',
-        role: role,
-        full_name: (role === 'recruiter') ? fd.get('company_name') : fd.get('full_name'),
-        company_name: role === 'recruiter' ? fd.get('company_name') : null,
-      };
-      try {
-        localStorage.setItem('lms_demo_user', JSON.stringify(demo));
-      } catch (_) {}
-      window.location.href = 'dashboard.html';
-    }
-
-    if (btnDemo) {
-      btnDemo.addEventListener('click', () => {
-        const fd = new FormData(document.getElementById('registerForm'));
-        saveDemoAndRedirect(fd);
-      });
-    }
-
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       errEl.classList.add('d-none');
-      if (demoEl) demoEl.classList.add('d-none');
       const fd = new FormData(e.target);
       const body = {
         email: fd.get('email'),
@@ -206,9 +176,8 @@
         const serverError = isNetwork || is404 || is500;
         if (serverError) {
           errEl.textContent = is500
-            ? 'Registration service error. The database may not be set up—run "npm run db:migrate" and ensure MySQL is running. Or use demo mode below.'
-            : 'Registration service unavailable. Run "npm start" with MySQL configured. Or use demo mode below.';
-          if (demoEl) demoEl.classList.remove('d-none');
+            ? 'Registration service error. The database may not be set up—run "npm run db:migrate" and ensure MySQL is running.'
+            : 'Registration service unavailable. Run "npm start" with MySQL configured.';
         } else {
           errEl.textContent = err.error || (err.details && err.details[0] && err.details[0].msg) || 'Registration failed';
         }

@@ -14,7 +14,7 @@
     return div.innerHTML;
   }
 
-  const DEMO_NOTE = '<p class="dash-demo-badge">Demo mode – run <code>npm start</code> with MySQL for full features.</p>';
+  const INFO_NOTE = '';
 
   const DASHBOARDS = {
     student: function (user) {
@@ -131,7 +131,7 @@
                 </div>
               </div>
             </div>
-            ${DEMO_NOTE}
+            ${INFO_NOTE}
           </div>
         `,
         quicklinks: [
@@ -193,7 +193,7 @@
                 <span class="dash-panel-muted">None yet</span>
               </div>
             </div>
-            ${DEMO_NOTE}
+            ${INFO_NOTE}
           </div>
         `,
         quicklinks: [
@@ -242,7 +242,7 @@
                 <span class="dash-panel-muted">Available after access</span>
               </div>
             </div>
-            ${DEMO_NOTE}
+            ${INFO_NOTE}
           </div>
         `,
         quicklinks: [
@@ -298,7 +298,7 @@
               <h3 class="dash-panel-title">Platform overview</h3>
               <p class="dash-panel-desc">Full admin features require the backend. Use the API for user management, course pricing, and payment verification.</p>
             </div>
-            ${DEMO_NOTE}
+            ${INFO_NOTE}
           </div>
         `,
         quicklinks: [
@@ -343,10 +343,10 @@
 
     el.innerHTML = dash.content;
     renderQuicklinks(dash.quicklinks);
-    if (role === 'super_admin') { loadAdminEnrollments(); loadAdminStats(); loadAdminTrainers(); }
-    if (role === 'trainer') loadTrainerEnrollments();
-    if (role === 'student') loadStudentEnrollments();
-    if (role === 'recruiter') initRecruiterPayButton();
+    if (role === 'super_admin') { loadAdminEnrollments(); loadAdminStats(); loadAdminTrainers(); loadAdminOperations(); }
+    if (role === 'trainer') { loadTrainerEnrollments(); loadTrainerStats(); }
+    if (role === 'student') { loadStudentEnrollments(); loadStudentStats(); }
+    if (role === 'recruiter') { initRecruiterPayButton(); loadRecruiterStats(); }
   }
 
   function initRecruiterPayButton() {
@@ -355,25 +355,10 @@
     btn.addEventListener('click', function () {
       btn.disabled = true;
       btn.textContent = 'Processing…';
-      window.api.post('/payment/recruiter-access').then(function (data) {
+      window.api.post('/payments/recruiter-access').then(function (data) {
         if (data.already_active) {
           alert('Access granted!');
           window.location.reload();
-          return;
-        }
-        if (data.demo && !data.key_id) {
-          window.api.post('/payment/recruiter-access/verify', {
-            razorpay_order_id: data.order_id,
-            razorpay_payment_id: 'demo_' + Date.now(),
-            razorpay_signature: 'demo',
-          }).then(function () {
-            alert('Access granted!');
-            window.location.reload();
-          }).catch(function (e) {
-            btn.disabled = false;
-            btn.textContent = 'Pay access fee';
-            alert(e.error || 'Failed');
-          });
           return;
         }
         var options = {
@@ -384,7 +369,7 @@
           description: 'Recruiter access',
           order_id: data.order_id,
           handler: function (r) {
-            window.api.post('/payment/recruiter-access/verify', {
+            window.api.post('/payments/recruiter-access/verify', {
               razorpay_order_id: r.razorpay_order_id,
               razorpay_payment_id: r.razorpay_payment_id,
               razorpay_signature: r.razorpay_signature,
@@ -467,7 +452,7 @@
       listEl.innerHTML = '<p class="dash-panel-muted">API not available.</p>';
       return;
     }
-    window.api.get('/student/my-enrollments').then(function (data) {
+    window.api.get('/enrollments/my').then(function (data) {
       const rows = data.enrollments || [];
       if (rows.length === 0) {
         listEl.innerHTML = '<p class="dash-panel-muted">No courses yet. <a href="courses.html">Browse courses</a> and enroll with a trainer.</p>';
@@ -482,6 +467,54 @@
     }).catch(function () {
       listEl.innerHTML = '<p class="dash-panel-muted">Could not load courses.</p>';
     });
+  }
+
+  function loadStudentStats() {
+    if (typeof window.api === 'undefined') return;
+    Promise.all([
+      window.api.get('/enrollments/my').catch(function () { return { enrollments: [] }; }),
+      window.api.get('/jobs/my/applications').catch(function () { return { applications: [] }; }),
+    ]).then(function (arr) {
+      var enrollments = arr[0].enrollments || [];
+      var apps = arr[1].applications || [];
+      var cards = document.querySelectorAll('.dash-role-student .dash-stat-card .dash-stat-num, .dash-student .dash-stat-card .dash-stat-num');
+      if (cards.length >= 4) {
+        cards[0].textContent = String(enrollments.length); // profile views placeholder -> enrolled count
+        cards[1].textContent = String(enrollments.filter(function (e) { return e.status === 'active'; }).length);
+        cards[2].textContent = String(enrollments.filter(function (e) { return e.payment_status === 'completed'; }).length);
+        cards[3].textContent = String(apps.length);
+      }
+    }).catch(function () {});
+  }
+
+  function loadTrainerStats() {
+    if (typeof window.api === 'undefined') return;
+    Promise.all([
+      window.api.get('/trainer/enrollments').catch(function () { return { enrollments: [] }; }),
+      window.api.get('/trainer/sessions').catch(function () { return { sessions: [] }; }),
+    ]).then(function (arr) {
+      var enrollments = arr[0].enrollments || [];
+      var sessions = arr[1].sessions || [];
+      var cards = document.querySelectorAll('.dash-trainer .dash-stat-card .dash-stat-num');
+      if (cards.length >= 3) {
+        cards[0].textContent = String(new Set(enrollments.map(function (e) { return e.course_id; })).size || 0);
+        cards[1].textContent = String(enrollments.length || 0);
+        cards[2].textContent = String(sessions.length || 0);
+      }
+    }).catch(function () {});
+  }
+
+  function loadRecruiterStats() {
+    if (typeof window.api === 'undefined') return;
+    window.api.get('/jobs').then(function (data) {
+      var jobs = data.jobs || [];
+      var cards = document.querySelectorAll('.dash-recruiter .dash-stat-card .dash-stat-num');
+      if (cards.length >= 3) {
+        cards[0].textContent = String(jobs.length);
+        cards[1].textContent = '0';
+        cards[2].textContent = '0';
+      }
+    }).catch(function () {});
   }
 
   function loadAdminEnrollments() {
@@ -504,6 +537,57 @@
     }).catch(function () {
       listEl.innerHTML = '<p class="dash-panel-muted">Failed to load enrollments.</p>';
     });
+  }
+
+  function loadAdminOperations() {
+    var host = document.querySelector('.dash-role.dash-admin');
+    if (!host || typeof window.api === 'undefined') return;
+    var box = document.createElement('div');
+    box.className = 'dash-panel dash-panel-full mt-3';
+    box.innerHTML = '<h3 class="dash-panel-title">Admin operations</h3>' +
+      '<div class="row g-3">' +
+      '<div class="col-md-6"><h6>Users</h6><div id="adminUsersMini" class="small text-muted">Loading...</div></div>' +
+      '<div class="col-md-6"><h6>Payments</h6><div id="adminPaymentsMini" class="small text-muted">Loading...</div></div>' +
+      '<div class="col-md-6"><h6>Settings</h6><div id="adminSettingsMini" class="small text-muted">Loading...</div></div>' +
+      '<div class="col-md-6"><h6>Audit logs</h6><div id="adminAuditMini" class="small text-muted">Loading...</div></div>' +
+      '<div class="col-12"><h6>Disputes</h6><div id="adminDisputesMini" class="small text-muted">Loading...</div></div>' +
+      '</div>';
+    host.appendChild(box);
+
+    window.api.get('/admin/users?limit=5').then(function (d) {
+      var users = d.users || [];
+      document.getElementById('adminUsersMini').innerHTML = users.length
+        ? users.map(function (u) { return '<div>' + escapeHtml(u.email) + ' (' + escapeHtml(u.role) + ')</div>'; }).join('')
+        : 'No users';
+    }).catch(function () { document.getElementById('adminUsersMini').textContent = 'Failed to load'; });
+
+    window.api.get('/admin/payments?limit=5').then(function (d) {
+      var rows = d.payments || [];
+      document.getElementById('adminPaymentsMini').innerHTML = rows.length
+        ? rows.map(function (p) { return '<div>' + escapeHtml(p.payment_type) + ' • ' + escapeHtml(String(p.amount)) + ' • ' + escapeHtml(p.status) + '</div>'; }).join('')
+        : 'No payments';
+    }).catch(function () { document.getElementById('adminPaymentsMini').textContent = 'Failed to load'; });
+
+    window.api.get('/admin/settings').then(function (d) {
+      var rows = d.settings || [];
+      document.getElementById('adminSettingsMini').innerHTML = rows.length
+        ? rows.map(function (s) { return '<div>' + escapeHtml(s.key) + ': ' + escapeHtml(String(s.value)) + '</div>'; }).join('')
+        : 'No settings';
+    }).catch(function () { document.getElementById('adminSettingsMini').textContent = 'Failed to load'; });
+
+    window.api.get('/admin/audit-logs?limit=5').then(function (d) {
+      var rows = d.logs || [];
+      document.getElementById('adminAuditMini').innerHTML = rows.length
+        ? rows.map(function (l) { return '<div>' + escapeHtml(l.action) + ' • ' + escapeHtml(l.created_at || '') + '</div>'; }).join('')
+        : 'No logs';
+    }).catch(function () { document.getElementById('adminAuditMini').textContent = 'Failed to load'; });
+
+    window.api.get('/admin/disputes?limit=5').then(function (d) {
+      var rows = d.disputes || [];
+      document.getElementById('adminDisputesMini').innerHTML = rows.length
+        ? rows.map(function (x) { return '<div>' + escapeHtml(x.subject || 'Dispute') + ' • ' + escapeHtml(x.status || '') + '</div>'; }).join('')
+        : 'No disputes';
+    }).catch(function () { document.getElementById('adminDisputesMini').textContent = 'Failed to load'; });
   }
 
   window.__refreshTrainerEnrollments = loadTrainerEnrollments;
@@ -530,7 +614,6 @@
   }
 
   function load() {
-    // Prefer real session (cookie) over stale lms_demo_user
     function tryApi() {
       if (typeof window.api === 'undefined') return Promise.resolve(false);
       return window.api.get('/auth/me').then(function (data) {
@@ -548,7 +631,6 @@
           skills: p.skills,
           bio: p.bio,
         };
-        try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
         renderDashboard(user, u.role);
         return true;
       }).catch(function () { return false; });
@@ -559,21 +641,9 @@
       if (quicklinksEl) quicklinksEl.innerHTML = '';
     }
 
-    function fallbackDemo() {
-      let demo = null;
-      try { demo = JSON.parse(localStorage.getItem('lms_demo_user') || 'null'); } catch (_) {}
-      if (demo && demo.email) {
-        const role = demo.role || 'student';
-        const user = { ...demo, full_name: demo.full_name, company_name: demo.company_name };
-        renderDashboard(user, role);
-        return;
-      }
-      showExpired();
-    }
-
     try {
       tryApi().then(function (ok) {
-        if (!ok) fallbackDemo();
+        if (!ok) showExpired();
       });
     } catch (err) {
       showExpired();

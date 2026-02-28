@@ -29,6 +29,15 @@
     <div class="container">
       <h1 class="dash-title">Inbox</h1>
       <p class="dash-sub text-muted">Your messages</p>
+      <div class="dash-panel mb-3">
+        <h5 class="mb-2">Send message</h5>
+        <div class="row g-2">
+          <div class="col-md-4"><input id="msgRecipient" class="form-control" placeholder="Recipient user id" /></div>
+          <div class="col-md-4"><input id="msgSubject" class="form-control" placeholder="Subject" /></div>
+          <div class="col-md-4"><button id="btnSendMsg" class="btn btn-primary w-100">Send</button></div>
+          <div class="col-12"><textarea id="msgBody" class="form-control" rows="3" placeholder="Message"></textarea></div>
+        </div>
+      </div>
       <div id="messagesList" class="dash-panel">
         <p class="dash-panel-muted">Loading...</p>
       </div>
@@ -41,6 +50,10 @@
   <script>
     (function () {
       const listEl = document.getElementById('messagesList');
+      const recipientEl = document.getElementById('msgRecipient');
+      const subjectEl = document.getElementById('msgSubject');
+      const bodyEl = document.getElementById('msgBody');
+      const sendBtn = document.getElementById('btnSendMsg');
       if (!listEl) return;
       if (typeof window.api === 'undefined' || !window.api.isLoggedIn || !window.api.isLoggedIn()) {
         window.location.href = 'login.html?redirect=messages.html';
@@ -51,22 +64,48 @@
         window.api.post('/auth/logout').catch(function () {});
         window.location.href = 'index.html';
       });
-      window.api.get('/messages/inbox').then(function (data) {
+      function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+
+      function loadInbox() {
+        return window.api.get('/messages').then(function (data) {
         const msgs = data.messages || [];
         if (msgs.length === 0) {
           listEl.innerHTML = '<p class="dash-panel-muted">No messages yet.</p>';
           return;
         }
-        function esc(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
         listEl.innerHTML = msgs.map(function (m) {
+          const markReadBtn = m.is_read ? '' : ('<button class="btn btn-sm btn-outline-secondary" data-read-id="' + esc(m.id) + '">Mark read</button>');
           return '<div class="list-group-item' + (m.is_read ? '' : ' list-group-item-action') + '">' +
             '<div class="d-flex w-100 justify-content-between"><h6 class="mb-1">' + esc(m.subject) + '</h6><small>' + esc(new Date(m.created_at).toLocaleDateString()) + '</small></div>' +
             '<p class="mb-1 small text-muted">From: ' + esc(m.sender_email) + '</p>' +
-            '<p class="mb-0 small">' + esc(m.body) + '</p></div>';
+            '<p class="mb-2 small">' + esc(m.body) + '</p>' + markReadBtn + '</div>';
         }).join('');
+        listEl.querySelectorAll('[data-read-id]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const id = btn.getAttribute('data-read-id');
+            window.api.patch('/messages/' + encodeURIComponent(id) + '/read', {}).then(function () { loadInbox(); }).catch(function () {});
+          });
+        });
       }).catch(function () {
         listEl.innerHTML = '<p class="dash-panel-muted">Could not load messages.</p>';
       });
+      }
+
+      sendBtn.addEventListener('click', function () {
+        const recipientId = (recipientEl.value || '').trim();
+        const subject = (subjectEl.value || '').trim();
+        const body = (bodyEl.value || '').trim();
+        if (!recipientId || !body) { alert('Recipient user id and message are required.'); return; }
+        window.api.post('/messages', { recipient_id: recipientId, subject: subject, body: body })
+        .then(function () {
+          recipientEl.value = '';
+          subjectEl.value = '';
+          bodyEl.value = '';
+          loadInbox();
+        }).catch(function (e) { alert((e && e.error) || 'Failed to send message'); });
+      });
+
+      loadInbox();
     })();
   </script>
 </body>

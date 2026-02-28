@@ -1,4 +1,4 @@
--- Add columns required by app (alignment with memoryStore/frontend)
+-- Add columns required by app (alignment with frontend fields)
 -- Run after schema.sql and 001, 002
 -- MySQL 8.0.12+ supports IF NOT EXISTS; for 5.7 run once on fresh DB
 

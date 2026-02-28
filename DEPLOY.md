@@ -1,50 +1,56 @@
-# Deploy to Vercel (Direct Deploy)
+# Windows + Zoho Deployment
 
-## Option 1: Vercel CLI (Direct from your machine)
+## 1) Prerequisites (Windows only)
 
-1. **Install Vercel CLI** (if not installed):
-   ```bash
-   npm i -g vercel
-   ```
+- Node.js 18+
+- MySQL or PostgreSQL on Windows
+- PM2 (`npm i -g pm2`)
+- Optional reverse proxy:
+  - IIS ARR (recommended on Windows), or
+  - Nginx for Windows
 
-2. **Login** (first time only):
-   ```bash
-   vercel login
-   ```
+## 2) Configure environment
 
-3. **Deploy from project root**:
-   ```bash
-   cd c:\Users\rk384\Desktop\LMS
-   vercel
-   ```
-   - Follow prompts: link to existing project or create new
-   - For production: `vercel --prod`
+Copy `.env.example` to `.env` and set:
 
-## Option 2: Vercel Dashboard (Import project)
+- `DB_*`
+- `JWT_SECRET`
+- `FRONTEND_URL`
+- `RAZORPAY_*` (if using Razorpay)
+- `ZOHO_*` (CRM/Books/Cliq and OAuth)
 
-1. Go to [vercel.com](https://vercel.com) → **Add New** → **Project**
-2. **Import Git Repository** (if connected) or **Deploy without Git**
-3. If deploying without Git:
-   - Install Vercel CLI and run `vercel` from the project folder
-   - Or drag & drop the `public` folder (limited – rewrites won't apply)
+## 3) Migrate + seed
 
-## Vercel project settings
+```bash
+npm install
+npm run db:migrate
+npm run db:seed
+```
 
-| Setting | Value |
-|--------|-------|
-| **Framework Preset** | Other |
-| **Root Directory** | `./` (leave default) |
-| **Build Command** | `echo 'Build OK'` (or leave empty) |
-| **Output Directory** | `public` |
-| **Install Command** | `npm install` (optional – not needed for static) |
+## 4) Start with PM2
 
-## What gets deployed
+```bash
+pm2 start server/index.js --name lms
+pm2 save
+```
 
-- **Static frontend** only (HTML, CSS, JS from `public/`)
-- **No backend** – API/Node server is not deployed; use demo mode for login/register
-- **Clean URLs** – `/courses`, `/dashboard`, etc. work via rewrites
+To restart after changes:
 
-## After deploy
+```bash
+pm2 restart lms
+```
 
-- Your site will be at `https://your-project.vercel.app`
-- Use **demo credentials** on Login page (Student, Trainer, Recruiter, Admin) – no server required
+## 5) Reverse proxy (Windows)
+
+- Configure IIS ARR (or Nginx for Windows) to proxy:
+  - `/` -> static + Node app
+  - `/api/*` -> `http://localhost:3000/api/*`
+- Enable HTTPS on your public domain.
+
+## 6) Smoke test
+
+```bash
+node test-smoke.js
+```
+
+If all tests pass, your Windows-hosted backend and frontend are live with Zoho-integrated operational sync.

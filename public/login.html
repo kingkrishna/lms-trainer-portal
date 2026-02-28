@@ -44,15 +44,6 @@
           <div id="googleSignInContainer" class="mb-2">
             <div id="googleSignInBtn"></div>
           </div>
-          <div class="login-demo mt-3 p-3 rounded" style="background:var(--vc-accent-bg);border:1px solid var(--vc-border);">
-            <p class="mb-2 small fw-semibold">Demo credentials (no server needed)</p>
-            <div class="d-flex flex-wrap gap-2">
-              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="student">Student</button>
-              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="trainer">Trainer</button>
-              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="recruiter">Recruiter</button>
-              <button type="button" class="btn btn-outline-primary btn-sm" data-demo-role="super_admin">Admin</button>
-            </div>
-          </div>
         </form>
         <p class="login-form-footer">
           Don’t have an account? <a href="register.html">Sign up</a>
@@ -97,34 +88,11 @@
   <script>window.GOOGLE_CLIENT_ID = '1030734771877-hm8k95fhogmlii1bfvs5edskqjob1hcj.apps.googleusercontent.com';</script>
   <script src="js/google-auth.js"></script>
   <script>
-    const DEMO_ACCOUNTS = {
-      student: { email: 'demo-student@visionconnects.com', password: 'password123' },
-      trainer: { email: 'demo-trainer@visionconnects.com', password: 'password123' },
-      recruiter: { email: 'demo-recruiter@visionconnects.com', password: 'password123' },
-      super_admin: { email: 'admin@visionconnects.com', password: 'password123' },
-    };
     const getRedirectUrl = () => {
       const p = new URLSearchParams(window.location.search);
       const r = p.get('redirect');
       return r && !r.includes('login') ? r : 'dashboard.html';
     };
-
-    document.querySelectorAll('[data-demo-role]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const demo = DEMO_ACCOUNTS[btn.dataset.demoRole];
-        if (!demo) return;
-        const errEl = document.getElementById('loginError');
-        errEl.classList.add('d-none');
-        try {
-          await window.api.post('/auth/login', { email: demo.email, password: demo.password });
-          try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
-          window.location.href = getRedirectUrl();
-        } catch (err) {
-          errEl.textContent = err.error || 'Login failed. Is the server running?';
-          errEl.classList.remove('d-none');
-        }
-      });
-    });
 
     window.initGoogleAuth({
       onSuccess: function () { window.location.href = getRedirectUrl(); },
@@ -141,10 +109,11 @@
       const fd = new FormData(e.target);
       try {
         await window.api.post('/auth/login', { email: fd.get('email'), password: fd.get('password') });
-        try { localStorage.removeItem('lms_demo_user'); } catch (_) {}
         const p = new URLSearchParams(window.location.search);
         const r = p.get('redirect');
-        window.location.href = (r && r !== 'login.html' && !r.includes('login')) ? r : 'dashboard.html';
+        const dest = (r && r !== 'login.html' && !r.includes('login')) ? r : 'dashboard.html';
+        const url = dest.startsWith('http') ? dest : (window.location.origin + (dest.startsWith('/') ? dest : '/' + dest));
+        window.location.replace(url);
       } catch (err) {
         const isNetwork = err && (err.message === 'Failed to fetch' || (err.message && String(err.message).toLowerCase().includes('network')));
         const msg = err && err.error ? err.error : (isNetwork ? 'Cannot reach server. Start it with: npm start' : 'Login failed');

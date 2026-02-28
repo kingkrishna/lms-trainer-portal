@@ -8,48 +8,7 @@
   var contentEl = document.getElementById('trainerDetailContent');
   var breadcrumbEl = document.getElementById('breadcrumbName');
 
-  var DEMO_TRAINERS = {
-    'tr-1': {
-      id: 'tr-1',
-      full_name: 'Nitin Kumar D',
-      bio: 'Focused on Zoho Books and AI in Accounting with practical business use cases.',
-      courses: ['Zoho Books', 'AI in Accounting'],
-      badge: 'Verified',
-    },
-    'tr-2': {
-      id: 'tr-2',
-      full_name: 'Ashok Raju',
-      bio: 'Tax trainer for GST, Income Tax, and TDS with compliance-first learning.',
-      courses: ['GST', 'Income Tax', 'TDS'],
-      badge: 'Popular',
-    },
-    'tr-3': {
-      id: 'tr-3',
-      full_name: 'Prasanth',
-      bio: 'Taxz instructor covering GST, Income Tax, and TDS through practical sessions.',
-      courses: ['Taxz - GST', 'Income Tax', 'TDS'],
-      badge: 'Pro',
-    },
-    'tr-4': {
-      id: 'tr-4',
-      full_name: 'Venkatesh',
-      bio: 'Core Accounting trainer focused on fundamentals and day-to-day accounting accuracy.',
-      courses: ['Core Accounting'],
-      badge: 'New',
-    },
-    'tr-5': {
-      id: 'tr-5',
-      full_name: 'Srinivas',
-      bio: 'Specialized trainer for Tally and GST Simulation with practical workflow coverage.',
-      courses: ['Tally', 'GST Simulation'],
-    },
-    'tr-6': {
-      id: 'tr-6',
-      full_name: 'JayaShree',
-      bio: 'GST Simulation trainer focused on practical workflows and filing scenarios.',
-      courses: ['GST Simulation'],
-    },
-  };
+  var TRAINER_CACHE = {};
 
   function getInitials(name) {
     return (name || '').split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
@@ -72,7 +31,8 @@
     var tags = (trainer.courses || []).map(function (c) {
       return '<span class="trainer-detail-tag">' + escapeHtml(c) + '</span>';
     }).join('');
-    var enrollHref = 'candidate-process.html?trainer=' + encodeURIComponent(trainer.id);
+    var defaultCourse = (trainer.courses && trainer.courses[0]) ? trainer.courses[0] : '';
+    var enrollHref = 'candidate-process.html?trainer=' + encodeURIComponent(trainer.id) + (defaultCourse ? ('&course=' + encodeURIComponent(defaultCourse)) : '');
     var coursesCount = (trainer.courses || []).length;
     var aboutText = trainer.bio || 'Experienced trainer focused on practical outcomes and career readiness.';
     contentEl.innerHTML =
@@ -142,12 +102,12 @@
   if (typeof window.api !== 'undefined') {
     window.api.get('/trainers/' + encodeURIComponent(id))
       .then(function (data) {
-        render(data && data.id ? data : (DEMO_TRAINERS[id] || null));
+        render(data && data.id ? data : (TRAINER_CACHE[id] || null));
       })
       .catch(function () {
-        render(DEMO_TRAINERS[id] || null);
+        render(TRAINER_CACHE[id] || null);
       });
   } else {
-    render(DEMO_TRAINERS[id] || null);
+    render(TRAINER_CACHE[id] || null);
   }
 })();

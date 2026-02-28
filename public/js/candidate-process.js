@@ -10,33 +10,7 @@
   const contentEl = document.getElementById('candidateProcessContent');
   const breadcrumbEl = document.getElementById('breadcrumbStep');
 
-  const DEMO_COURSES = {
-    'core-accounting': { id: 'acc-0', title: 'Core Accounting', price: 3600, currency: 'INR' },
-    'financial-accounting-fundamentals': { id: 'acc-1', title: 'Financial Accounting Fundamentals', price: 4999, currency: 'INR' },
-    'cost-management-accounting': { id: 'acc-2', title: 'Cost & Management Accounting', price: 5499, currency: 'INR' },
-    'taxation-income-tax-gst': { id: 'acc-3', title: 'Taxation – Income Tax & GST', price: 5999, currency: 'INR' },
-    'income-tax-tds': { id: 'acc-3b', title: 'Income Tax and TDS', price: 3600, currency: 'INR' },
-    'gst-simulation': { id: 'acc-3c', title: 'GST Simulation', price: 3600, currency: 'INR' },
-    'auditing-assurance': { id: 'acc-4', title: 'Auditing & Assurance', price: 6499, currency: 'INR' },
-    'zoho-books': { id: 'acc-4b', title: 'Zoho Books', price: 5000, currency: 'INR' },
-    'ai-in-accounting': { id: 'acc-4c', title: 'AI in Accounting', price: 5000, currency: 'INR' },
-    'tally': { id: 'acc-4d', title: 'Tally', price: 5000, currency: 'INR' },
-    'tally-accounting-software': { id: 'acc-5', title: 'Tally & Accounting Software', price: 3499, currency: 'INR' },
-    'financial-reporting-ind-as-ifrs': { id: 'acc-6', title: 'Financial Reporting (Ind AS / IFRS)', price: 6999, currency: 'INR' },
-    'ca-foundation-preparation': { id: 'acc-7', title: 'CA Foundation Preparation', price: 8999, currency: 'INR' },
-    'bookkeeping-payroll': { id: 'acc-8', title: 'Bookkeeping & Payroll', price: 2999, currency: 'INR' },
-    'corporate-finance-valuation': { id: 'acc-9', title: 'Corporate Finance & Valuation', price: 6499, currency: 'INR' },
-    'interview-prep-soft-skills': { id: 'acc-10', title: 'Interview Prep & Soft Skills', price: 2499, currency: 'INR' },
-  };
-
-  const DEMO_TRAINERS = {
-    'tr-1': { id: 'tr-1', full_name: 'Nitin Kumar D', hasGroupClass: true, courses: ['zoho-books', 'ai-in-accounting'] },
-    'tr-2': { id: 'tr-2', full_name: 'Ashok Raju', hasGroupClass: false, courses: ['taxation-income-tax-gst', 'income-tax-tds'] },
-    'tr-3': { id: 'tr-3', full_name: 'Prasanth', hasGroupClass: true, courses: ['gst-simulation', 'income-tax-tds'] },
-    'tr-4': { id: 'tr-4', full_name: 'Venkatesh', hasGroupClass: false, courses: ['core-accounting'] },
-    'tr-5': { id: 'tr-5', full_name: 'Srinivas', hasGroupClass: true, courses: ['tally', 'gst-simulation'] },
-    'tr-6': { id: 'tr-6', full_name: 'JayaShree', hasGroupClass: true, courses: ['gst-simulation'] },
-  };
+  const COURSE_LOOKUP = {};
 
   const SCHEDULE_SLOTS = [
     'Mon 10:00 AM – 11:00 AM',
@@ -75,7 +49,7 @@
     }
     if (!course && trainer.courses && trainer.courses.length > 0) {
       const firstSlug = trainer.courses[0];
-      course = DEMO_COURSES[firstSlug] ? Object.assign({}, DEMO_COURSES[firstSlug], { slug: firstSlug }) : { id: firstSlug, title: firstSlug.replace(/-/g, ' '), price: 0, currency: 'INR', slug: firstSlug };
+      course = COURSE_LOOKUP[firstSlug] ? Object.assign({}, COURSE_LOOKUP[firstSlug], { slug: firstSlug }) : { id: firstSlug, title: firstSlug.replace(/-/g, ' '), price: 0, currency: 'INR', slug: firstSlug };
     }
     if (!course) {
       contentEl.innerHTML =
@@ -93,7 +67,7 @@
     const courseSelectorHtml = hasMultipleCourses
       ? (function () {
           var opts = trainerCourses.map(function (slug) {
-            var c = DEMO_COURSES[slug] || { title: slug.replace(/-/g, ' ') };
+            var c = COURSE_LOOKUP[slug] || { title: slug.replace(/-/g, ' ') };
             return '<option value="' + escapeHtml(slug) + '"' + (slug === (course.slug || course.id) ? ' selected' : '') + '>' + escapeHtml(c.title) + '</option>';
           }).join('');
           return '<label class="candidate-schedule-label" style="margin-top:0;">Course</label><select id="courseSelect" class="form-select" style="max-width:320px;">' + opts + '</select>';
@@ -183,7 +157,7 @@
     if (courseSelectEl) {
       courseSelectEl.addEventListener('change', function () {
         var slug = this.value;
-        var c = DEMO_COURSES[slug];
+        var c = COURSE_LOOKUP[slug];
         if (c) {
           var priceEl = contentEl.querySelector('.candidate-process-summary p');
           if (priceEl) priceEl.innerHTML = 'Course fee: ' + formatPrice(c.price, c.currency || 'INR') + ' • Complete the steps below to proceed.';
@@ -258,26 +232,10 @@
       }
 
       if (paymentVal === 'direct_pay' && (course.price > 0 || (course.price === 0 && course.id))) {
-        window.api.post('/payment/create-order', {
+        window.api.post('/payments/create-order', {
           course_id: course.slug || course.id,
           trainer_id: trainer.slug || trainer.id || trainerId,
-          amount: course.price,
         }).then(function (orderData) {
-          if (orderData.demo && !orderData.key_id) {
-            window.api.post('/payment/verify', {
-              razorpay_order_id: orderData.order_id,
-              razorpay_payment_id: 'demo_pay_' + Date.now(),
-              razorpay_signature: 'demo',
-              course_id: course.slug || course.id,
-              trainer_id: trainer.slug || trainer.id || trainerId,
-            }).then(function () {
-              doEnroll('direct_pay');
-            }).catch(function (e) {
-              btn.disabled = false;
-              alert(e.error || 'Verification failed');
-            });
-            return;
-          }
           var options = {
             key: orderData.key_id,
             amount: orderData.amount,
@@ -286,14 +244,15 @@
             description: course.title,
             order_id: orderData.order_id,
             handler: function (response) {
-              window.api.post('/payment/verify', {
+              window.api.post('/payments/verify', {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 course_id: course.slug || course.id,
                 trainer_id: trainer.slug || trainer.id || trainerId,
               }).then(function () {
-                doEnroll('direct_pay');
+                alert('Payment successful! Enrollment confirmed.');
+                window.location.href = 'dashboard.html';
               }).catch(function (e) {
                 btn.disabled = false;
                 alert(e.error || 'Payment verification failed');
@@ -317,8 +276,8 @@
   }
 
   function loadData() {
-    let course = courseSlug && DEMO_COURSES[courseSlug] ? DEMO_COURSES[courseSlug] : null;
-    let trainer = trainerId && DEMO_TRAINERS[trainerId] ? DEMO_TRAINERS[trainerId] : null;
+    let course = null;
+    let trainer = null;
 
     if (typeof window.api !== 'undefined') {
       const promises = [];
@@ -327,8 +286,14 @@
       if (promises.length > 0) {
         Promise.all(promises)
           .then(function (results) {
-            if (results[0] && results[0].slug) course = results[0];
-            if (results[1] && results[1].id) trainer = results[1];
+            var idx = 0;
+            if (courseSlug) {
+              if (results[idx] && results[idx].slug) course = results[idx];
+              idx += 1;
+            }
+            if (trainerId) {
+              if (results[idx] && results[idx].id) trainer = results[idx];
+            }
             render(course, trainer);
           })
           .catch(function () {

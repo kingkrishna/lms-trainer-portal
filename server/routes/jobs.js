@@ -1,17 +1,10 @@
 const express = require('express');
 const crypto = require('crypto');
 const db = require('../db/connection');
+const analytics = require('../lib/analytics');
 const { authenticate, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
-
-const DEMO_JOBS = [
-  { id: 'job-1', title: 'Junior Accountant', company: 'ABC & Co.', location: 'Mumbai', job_type: 'full_time', description: 'Tally experience preferred.' },
-  { id: 'job-2', title: 'Tax Associate', company: 'XYZ Tax', location: 'Bangalore', job_type: 'full_time', description: 'Income tax and GST.' },
-  { id: 'job-3', title: 'Audit Trainee', company: 'Grant & Partners', location: 'Delhi NCR', job_type: 'full_time', description: 'Support audit engagements.' },
-  { id: 'job-4', title: 'Tally Operator', company: 'Retail Solutions', location: 'Chennai', job_type: 'full_time', description: 'Tally, GST returns.' },
-  { id: 'job-5', title: 'Finance Intern', company: 'ScaleUp Ventures', location: 'Remote', job_type: 'internship', description: 'Financial reporting.' },
-];
 
 function normalizeId(v) {
   if (Buffer.isBuffer(v)) return v.toString('hex');
@@ -24,20 +17,92 @@ function toBuffer(hex) {
 }
 
 // GET /jobs – list jobs
-router.get('/', async (req, res) => {
+router.get('/', authenticate, requireRole('student', 'recruiter'), async (req, res) => {
   try {
-    const rows = await db.query('SELECT id, title, company, location, job_type, description FROM jobs WHERE is_active = 1 ORDER BY created_at DESC');
-    if (Array.isArray(rows) && rows.length > 0) {
-      return res.json({ jobs: rows.map((j) => ({ ...j, id: normalizeId(j.id) })) });
+    let rows;
+    if (req.user.role === 'recruiter') {
+      const rec = await db.queryOne('SELECT id FROM recruiters WHERE user_id = ?', [db.toBuffer(req.user.id)]);
+      if (!rec) return res.status(403).json({ error: 'Recruiter profile required' });
+      rows = await db.query(
+        `SELECT id, title, company, location, job_type, description, skills_required_json, school_preferred, salary_range, openings_count, deadline, status
+         FROM jobs
+         WHERE recruiter_id = ? AND is_active = 1
+         ORDER BY created_at DESC`,
+        [rec.id]
+      );
+    } else {
+      rows = await db.query(
+        `SELECT id, title, company, location, job_type, description, skills_required_json, school_preferred, salary_range, openings_count, deadline, status
+         FROM jobs
+         WHERE is_active = 1
+         ORDER BY created_at DESC`
+      );
     }
-    return res.json({ jobs: DEMO_JOBS });
-  } catch (_) {
-    return res.json({ jobs: DEMO_JOBS });
+    return res.json({ jobs: (rows || []).map((j) => ({ ...j, id: normalizeId(j.id) })) });
+  } catch (err) {
+    console.error('Jobs list error:', err);
+    return res.status(500).json({ error: 'Failed to load jobs' });
+  }
+});
+
+// POST /jobs – recruiter creates job (requires paid recruiter access)
+router.post('/', authenticate, requireRole('recruiter'), async (req, res) => {
+  try {
+    const rec = await db.queryOne('SELECT id, has_paid_access, access_expiry FROM recruiters WHERE user_id = ?', [db.toBuffer(req.user.id)]);
+    if (!rec) return res.status(403).json({ error: 'Recruiter profile required' });
+    if (!rec.has_paid_access) return res.status(403).json({ error: 'Paid recruiter access required' });
+    if (rec.access_expiry && new Date(rec.access_expiry).getTime() < Date.now()) {
+      return res.status(403).json({ error: 'Recruiter access expired' });
+    }
+
+    const title = String(req.body?.title || '').trim();
+    if (!title) return res.status(400).json({ error: 'Title is required' });
+    const payload = {
+      company: String(req.body?.company || '').trim() || null,
+      location: String(req.body?.location || '').trim() || null,
+      job_type: String(req.body?.job_type || 'full_time'),
+      description: String(req.body?.description || '').trim() || null,
+      skills_required_json: req.body?.skills_required_json ? JSON.stringify(req.body.skills_required_json) : null,
+      school_preferred: String(req.body?.school_preferred || '').trim() || null,
+      salary_range: String(req.body?.salary_range || '').trim() || null,
+      openings_count: Number(req.body?.openings_count || 1),
+      deadline: req.body?.deadline ? new Date(req.body.deadline) : null,
+      status: String(req.body?.status || 'open').trim() || 'open',
+    };
+    if (!['full_time', 'part_time', 'internship', 'contract'].includes(payload.job_type)) {
+      return res.status(400).json({ error: 'Invalid job_type' });
+    }
+
+    const idBuf = crypto.randomBytes(16);
+    await db.query(
+      `INSERT INTO jobs (id, recruiter_id, title, company, description, location, job_type, is_active, skills_required_json, school_preferred, salary_range, openings_count, deadline, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?)`,
+      [
+        idBuf,
+        rec.id,
+        title,
+        payload.company,
+        payload.description,
+        payload.location,
+        payload.job_type,
+        payload.skills_required_json,
+        payload.school_preferred,
+        payload.salary_range,
+        payload.openings_count,
+        payload.deadline,
+        payload.status,
+      ]
+    );
+    res.status(201).json({ message: 'Job created', id: normalizeId(idBuf) });
+    analytics.track('job_created', { job_id: normalizeId(idBuf) }, req.user.id);
+  } catch (err) {
+    console.error('Job create error:', err);
+    res.status(500).json({ error: 'Failed to create job' });
   }
 });
 
 // GET /jobs/my/applications – must be before /:id
-router.get('/my/applications', authenticate, requireRole(['student']), async (req, res) => {
+router.get('/my/applications', authenticate, requireRole('student'), async (req, res) => {
   try {
     const profile = await db.queryOne('SELECT id FROM students WHERE user_id = ?', [db.toBuffer(req.user.id)]);
     if (!profile) return res.json({ applications: [] });
@@ -69,23 +134,75 @@ router.get('/my/applications', authenticate, requireRole(['student']), async (re
 });
 
 // GET /jobs/:id – job detail
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, requireRole('student', 'recruiter'), async (req, res) => {
   const id = req.params.id;
   try {
-    const rows = await db.query('SELECT id, title, company, location, job_type, description FROM jobs WHERE is_active = 1');
+    if (!/^[0-9a-f]{32}$/i.test(String(id).replace(/-/g, ''))) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+    const rows = await db.query(
+      'SELECT id, title, company, location, job_type, description, skills_required_json, school_preferred, salary_range, openings_count, deadline, status FROM jobs WHERE is_active = 1 AND id = ?',
+      [toBuffer(id)]
+    );
     const list = (rows || []).map((j) => ({ ...j, id: normalizeId(j.id) }));
-    const job = list.find((j) => j.id === id) || DEMO_JOBS.find((j) => j.id === id);
+    const job = list.find((j) => j.id === id);
     if (!job) return res.status(404).json({ error: 'Job not found' });
     return res.json(job);
-  } catch (_) {
-    const job = DEMO_JOBS.find((j) => j.id === id);
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    return res.json(job);
+  } catch (err) {
+    console.error('Job detail error:', err);
+    return res.status(500).json({ error: 'Failed to load job' });
   }
 });
 
-// POST /jobs/:id/apply – student applies for job
-router.post('/:id/apply', authenticate, requireRole(['student']), async (req, res) => {
+// PATCH /jobs/:id – recruiter updates own job
+router.patch('/:id', authenticate, requireRole('recruiter'), async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const jobIdBuf = toBuffer(jobId);
+    const existing = await db.queryOne('SELECT id, recruiter_id FROM jobs WHERE id = ? AND is_active = 1', [jobIdBuf]);
+    if (!existing) return res.status(404).json({ error: 'Job not found' });
+
+    const rec = await db.queryOne('SELECT id, has_paid_access, access_expiry FROM recruiters WHERE user_id = ?', [db.toBuffer(req.user.id)]);
+    if (!rec) return res.status(403).json({ error: 'Recruiter profile required' });
+    if (normalizeId(rec.id) !== normalizeId(existing.recruiter_id)) return res.status(403).json({ error: 'Not authorized to update this job' });
+    if (!rec.has_paid_access) return res.status(403).json({ error: 'Paid recruiter access required' });
+    if (rec.access_expiry && new Date(rec.access_expiry).getTime() < Date.now()) return res.status(403).json({ error: 'Recruiter access expired' });
+
+    const patch = {};
+    if (req.body?.title !== undefined) patch.title = String(req.body.title || '').trim();
+    if (req.body?.company !== undefined) patch.company = String(req.body.company || '').trim() || null;
+    if (req.body?.location !== undefined) patch.location = String(req.body.location || '').trim() || null;
+    if (req.body?.job_type !== undefined) patch.job_type = String(req.body.job_type || '').trim();
+    if (req.body?.description !== undefined) patch.description = String(req.body.description || '').trim() || null;
+    if (req.body?.skills_required_json !== undefined) patch.skills_required_json = req.body.skills_required_json ? JSON.stringify(req.body.skills_required_json) : null;
+    if (req.body?.school_preferred !== undefined) patch.school_preferred = String(req.body.school_preferred || '').trim() || null;
+    if (req.body?.salary_range !== undefined) patch.salary_range = String(req.body.salary_range || '').trim() || null;
+    if (req.body?.openings_count !== undefined) patch.openings_count = Number(req.body.openings_count || 1);
+    if (req.body?.deadline !== undefined) patch.deadline = req.body.deadline ? new Date(req.body.deadline) : null;
+    if (req.body?.status !== undefined) patch.status = String(req.body.status || '').trim();
+    if (req.body?.is_active !== undefined) patch.is_active = req.body.is_active ? 1 : 0;
+    if (!Object.keys(patch).length) return res.status(400).json({ error: 'No valid fields to update' });
+    if (patch.job_type && !['full_time', 'part_time', 'internship', 'contract'].includes(patch.job_type)) {
+      return res.status(400).json({ error: 'Invalid job_type' });
+    }
+
+    const set = [];
+    const params = [];
+    for (const [k, v] of Object.entries(patch)) {
+      set.push(`${k} = ?`);
+      params.push(v);
+    }
+    params.push(jobIdBuf);
+    await db.query(`UPDATE jobs SET ${set.join(', ')} WHERE id = ?`, params);
+    res.json({ message: 'Job updated' });
+    analytics.track('job_updated', { job_id: jobId }, req.user.id);
+  } catch (err) {
+    console.error('Job update error:', err);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
+});
+
+async function applyToJob(req, res) {
   try {
     const jobId = req.params.id;
     const studentProfile = await db.queryOne('SELECT id FROM students WHERE user_id = ?', [db.toBuffer(req.user.id)]);
@@ -98,41 +215,37 @@ router.post('/:id/apply', authenticate, requireRole(['student']), async (req, re
       const jobIdBuf = toBuffer(jobId);
       job = await db.queryOne('SELECT id FROM jobs WHERE id = ? AND is_active = 1', [jobIdBuf]);
     }
-    if (!job) {
-      job = DEMO_JOBS.find((j) => j.id === jobId) ? { id: jobId } : null;
-    }
     if (!job) return res.status(404).json({ error: 'Job not found' });
 
     const jobIdBuf = /^[0-9a-f]{32}$/i.test(String(jobId).replace(/-/g, '')) ? toBuffer(jobId) : null;
     const studentIdBuf = studentProfile.id;
-    const existing = jobIdBuf
-      ? await db.queryOne('SELECT id FROM job_applications WHERE job_id = ? AND student_id = ?', [jobIdBuf, studentIdBuf])
-      : null;
+    if (!jobIdBuf) return res.status(400).json({ error: 'Invalid job id' });
+    const existing = await db.queryOne('SELECT id FROM job_applications WHERE job_id = ? AND student_id = ?', [jobIdBuf, studentIdBuf]);
     if (existing) return res.status(400).json({ error: 'Already applied for this job' });
 
     const idBuf = crypto.randomBytes(16);
-    if (jobIdBuf) {
-        await db.query(
-        'INSERT INTO job_applications (id, job_id, student_id, status, cover_message) VALUES (?, ?, ?, ?, ?)',
-        [idBuf, jobIdBuf, studentIdBuf, 'applied', cover_message || null]
-      );
-    } else {
-      await db.query(
-        'INSERT INTO job_applications (id, job_id, student_id, status, cover_message) VALUES (?, ?, ?, ?, ?)',
-        [idBuf, toBuffer(crypto.createHash('md5').update('job-' + jobId).digest('hex').slice(0, 32)), studentIdBuf, 'applied', cover_message || null]
-      );
-    }
+    await db.query(
+      'INSERT INTO job_applications (id, job_id, student_id, status, cover_message) VALUES (?, ?, ?, ?, ?)',
+      [idBuf, jobIdBuf, studentIdBuf, 'applied', cover_message || null]
+    );
     try { require('../lib/audit').log('job_apply', 'job_applications', idBuf.toString('hex'), null, { job_id: jobId }, req.user.id, req); } catch (_) {}
 
     res.status(201).json({ message: 'Application submitted successfully' });
+    analytics.track('job_applied', { job_id: jobId }, req.user.id);
   } catch (err) {
     console.error('Job apply error:', err);
     res.status(500).json({ error: 'Failed to apply' });
   }
-});
+}
+
+// POST /jobs/:id/apply – legacy path
+router.post('/:id/apply', authenticate, requireRole('student'), applyToJob);
+
+// POST /jobs/:id/applications – contract path
+router.post('/:id/applications', authenticate, requireRole('student'), applyToJob);
 
 // GET /jobs/:id/applications – recruiter views applications (owns job)
-router.get('/:id/applications', authenticate, requireRole(['recruiter', 'super_admin']), async (req, res) => {
+router.get('/:id/applications', authenticate, requireRole('recruiter'), async (req, res) => {
   try {
     const jobId = req.params.id;
     const jobIdBuf = toBuffer(jobId);
@@ -140,11 +253,9 @@ router.get('/:id/applications', authenticate, requireRole(['recruiter', 'super_a
     const job = await db.queryOne('SELECT id, recruiter_id FROM jobs WHERE id = ?', [jobIdBuf]);
     if (!job) return res.status(404).json({ error: 'Job not found' });
 
-    if (req.user.role === 'recruiter') {
-      const rec = await db.queryOne('SELECT id FROM recruiters WHERE user_id = ?', [db.toBuffer(req.user.id)]);
-      if (!rec || normalizeId(job.recruiter_id) !== normalizeId(rec.id)) {
-        return res.status(403).json({ error: 'Not authorized to view this job\'s applications' });
-      }
+    const rec = await db.queryOne('SELECT id FROM recruiters WHERE user_id = ?', [db.toBuffer(req.user.id)]);
+    if (!rec || normalizeId(job.recruiter_id) !== normalizeId(rec.id)) {
+      return res.status(403).json({ error: 'Not authorized to view this job\'s applications' });
     }
 
     const rows = await db.query(
@@ -176,7 +287,7 @@ router.get('/:id/applications', authenticate, requireRole(['recruiter', 'super_a
 });
 
 // PATCH /jobs/applications/:id/status – recruiter updates status (shortlisted, rejected, hired)
-router.patch('/applications/:id/status', authenticate, requireRole(['recruiter', 'super_admin']), async (req, res) => {
+router.patch('/applications/:id/status', authenticate, requireRole('recruiter', 'super_admin'), async (req, res) => {
   try {
     const appId = req.params.id;
     const { status } = req.body;

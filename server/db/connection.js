@@ -1,10 +1,9 @@
 const config = require('../config');
 
-// Use in-memory dummy data when USE_DUMMY_DATA=true (no MySQL required)
-const memoryStore = config.useDummyData ? require('./memoryStore') : null;
-
 async function getPool() {
-  if (memoryStore) return null;
+  if (!config.db.user || !config.db.password) {
+    throw new Error('Database credentials missing. Set DB_USER and DB_PASSWORD.');
+  }
   const mysql = require('mysql2/promise');
   return mysql.createPool({
     host: config.db.host,
@@ -21,14 +20,12 @@ async function getPool() {
 let pool = null;
 
 async function query(sql, params = []) {
-  if (memoryStore) return memoryStore.query(sql, params);
   if (!pool) pool = await getPool();
   const [rows] = await pool.execute(sql, params);
   return rows;
 }
 
 async function queryOne(sql, params = []) {
-  if (memoryStore) return memoryStore.queryOne(sql, params);
   const rows = await query(sql, params);
   return rows[0] || null;
 }

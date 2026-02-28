@@ -6,6 +6,8 @@ const { body } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const config = require('../config');
 const db = require('../db/connection');
+const zoho = require('../lib/zoho');
+const analytics = require('../lib/analytics');
 const { authenticate, requireRole } = require('../middleware/auth');
 const { handleValidation } = require('../middleware/validate');
 const { authLimiter } = require('../middleware/rateLimit');
@@ -27,7 +29,7 @@ function setTokenCookie(res, payload) {
   const isProduction = config.env === 'production';
   const cookieOpts = {
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: 'lax', // lax allows redirect after login; strict can block in some browsers
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: '/',
   };
@@ -48,6 +50,19 @@ router.post(
     body('contact_person').optional().trim(),
     body('phone').optional().trim(),
     body('bio').optional().trim(),
+    body().custom((v) => {
+      const role = String(v?.role || '').trim();
+      if (role === 'student' && !String(v?.full_name || '').trim()) {
+        throw new Error('full_name is required for student');
+      }
+      if (role === 'trainer' && !String(v?.full_name || '').trim()) {
+        throw new Error('full_name is required for trainer');
+      }
+      if (role === 'recruiter' && !String(v?.company_name || '').trim()) {
+        throw new Error('company_name is required for recruiter');
+      }
+      return true;
+    }),
   ],
   handleValidation,
   async (req, res) => {
@@ -88,7 +103,29 @@ router.post(
       }
 
       const roleName = await db.queryOne('SELECT name FROM roles WHERE id = ?', [roleId]);
+      try {
+        await zoho.upsertCRMContact({
+          email,
+          fullName: name,
+          role: roleName?.name,
+          phone,
+          lifecycleStage: 'registered',
+        });
+        await zoho.sendTemplateMail({
+          to: email,
+          subject: 'Welcome to Vision Connects',
+          title: 'Registration successful',
+          lines: [
+            `Role: ${roleName?.name || role}`,
+            'Your account is now active.',
+            'You can login and complete your profile.',
+          ],
+        });
+      } catch (e) {
+        console.error('Zoho register sync failed:', e.message);
+      }
       setTokenCookie(res, { id: idBuf, email, role: roleName.name });
+      analytics.track('auth_register', { role: roleName.name, email_domain: String(email).split('@')[1] || '' }, db.toHex(idBuf));
       res.status(201).json({
         message: 'Registered successfully',
         user: { id: db.toHex(idBuf), email, role: roleName.name },
@@ -124,8 +161,18 @@ router.post(
         return res.status(401).json({ error: 'Invalid email or password' });
       }
       await db.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+      try {
+        await zoho.upsertCRMContact({
+          email: user.email,
+          role: user.role,
+          lifecycleStage: 'active_login',
+        });
+      } catch (e) {
+        console.error('Zoho login sync failed:', e.message);
+      }
       try { require('../lib/audit').log('login', 'user', db.toHex(user.id), null, { email: user.email, role: user.role }, user.id, req); } catch (_) {}
       setTokenCookie(res, { id: user.id, email: user.email, role: user.role });
+      analytics.track('auth_login', { role: user.role }, db.toHex(user.id));
       res.json({
         message: 'Logged in',
         user: { id: db.toHex(user.id), email: user.email, role: user.role },
@@ -178,6 +225,16 @@ router.post(
           await db.query('UPDATE users SET google_id = ? WHERE id = ?', [googleId, user.id]);
         }
         await db.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP, email_verified = TRUE WHERE id = ?', [user.id]);
+        try {
+          await zoho.upsertCRMContact({
+            email: user.email,
+            fullName: name,
+            role: user.role,
+            lifecycleStage: 'active_login',
+          });
+        } catch (e) {
+          console.error('Zoho google login sync failed:', e.message);
+        }
         setTokenCookie(res, { id: user.id, email: user.email, role: user.role });
         return res.json({
           message: 'Logged in',
@@ -213,6 +270,16 @@ router.post(
       }
 
       const roleName = await db.queryOne('SELECT name FROM roles WHERE id = ?', [roleId]);
+      try {
+        await zoho.upsertCRMContact({
+          email,
+          fullName,
+          role: roleName?.name,
+          lifecycleStage: 'registered_google',
+        });
+      } catch (e) {
+        console.error('Zoho google register sync failed:', e.message);
+      }
       setTokenCookie(res, { id: idBuf, email, role: roleName.name });
       res.status(201).json({
         message: 'Registered with Google',
@@ -232,10 +299,29 @@ router.post(
 );
 
 // POST /auth/logout
-router.post('/logout', (req, res) => {
+router.post('/logout', authenticate, (req, res) => {
   res.clearCookie(config.jwt.cookieName, { path: '/' });
   res.clearCookie('lms_ok', { path: '/' });
+  analytics.track('auth_logout', { role: req.user.role }, req.user.id);
   res.json({ message: 'Logged out' });
+});
+
+// POST /auth/refresh
+router.post('/refresh', async (req, res) => {
+  try {
+    const token =
+      req.cookies?.[config.jwt.cookieName] ||
+      (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')
+        ? req.headers.authorization.slice(7)
+        : null);
+    if (!token) return res.status(401).json({ error: 'Authentication required' });
+    const decoded = jwt.verify(token, config.jwt.secret, { ignoreExpiration: true });
+    setTokenCookie(res, { id: decoded.id, email: decoded.email, role: decoded.role });
+    res.json({ message: 'Session refreshed' });
+  } catch (err) {
+    console.error('Refresh error:', err);
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
 });
 
 // GET /auth/me – current user + role profile
@@ -337,6 +423,17 @@ router.patch(
         message: 'Profile updated',
         profile: profile ? { ...profile, id: profile.id ? db.toHex(profile.id) : db.toHex(user.id), user_id: db.toHex(profile.user_id || user.id) } : null,
       });
+      try {
+        await zoho.upsertCRMContact({
+          email: user.email,
+          fullName: full_name || contact_person || company_name || user.email,
+          role: user.role,
+          phone,
+          lifecycleStage: 'profile_updated',
+        });
+      } catch (e) {
+        console.error('Zoho profile sync failed:', e.message);
+      }
     } catch (err) {
       console.error('Profile update error:', err);
       res.status(500).json({ error: 'Failed to update profile' });

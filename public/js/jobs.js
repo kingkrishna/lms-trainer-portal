@@ -1,6 +1,6 @@
 /**
  * Jobs page: load jobs and render listing cards.
- * Jobs shown immediately from demo data; API can replace when available.
+ * Jobs are loaded from the backend API.
  */
 
 (function () {
@@ -21,77 +21,8 @@
 
   if (!jobListEl) return;
 
-  var DEMO_JOBS = [
-    {
-      id: 'job-1',
-      title: 'Junior Accountant',
-      company: 'ABC & Co. Chartered Accountants',
-      location: 'Mumbai, Maharashtra',
-      job_type: 'full_time',
-      description: 'Handle day-to-day bookkeeping, bank reconciliation, and assist in financial statements. Tally experience preferred.',
-    },
-    {
-      id: 'job-2',
-      title: 'Tax Associate',
-      company: 'XYZ Tax Consultants',
-      location: 'Bangalore, Karnataka',
-      job_type: 'full_time',
-      description: 'Income tax and GST compliance, return filing, and client support. Fresh CAs and commerce graduates welcome.',
-      badge: 'Popular',
-    },
-    {
-      id: 'job-3',
-      title: 'Audit Trainee',
-      company: 'Grant & Partners',
-      location: 'Delhi NCR',
-      job_type: 'full_time',
-      description: 'Support statutory and internal audit engagements. CA Inter / Final students can apply.',
-      badge: 'New',
-    },
-    {
-      id: 'job-4',
-      title: 'Tally Operator',
-      company: 'Retail Solutions Pvt Ltd',
-      location: 'Chennai, Tamil Nadu',
-      job_type: 'full_time',
-      description: 'Maintain accounts in Tally, GST returns, and vendor reconciliation. 1–2 years experience.',
-    },
-    {
-      id: 'job-5',
-      title: 'Finance Intern',
-      company: 'ScaleUp Ventures',
-      location: 'Remote',
-      job_type: 'internship',
-      description: 'Assist in financial reporting, variance analysis, and dashboards. MBA/CA students preferred.',
-      badge: 'Remote',
-    },
-    {
-      id: 'job-6',
-      title: 'Accounts Executive',
-      company: 'Metro Manufacturing Ltd',
-      location: 'Pune, Maharashtra',
-      job_type: 'full_time',
-      description: 'Cost accounting, inventory, and month-end closing. CMA or B.Com with 2+ years experience.',
-    },
-    {
-      id: 'job-7',
-      title: 'Part-time Bookkeeper',
-      company: 'Small Business Services',
-      location: 'Hyderabad, Telangana',
-      job_type: 'part_time',
-      description: 'Bookkeeping and payroll for multiple clients. Flexible hours. Tally knowledge required.',
-    },
-  ];
-
-  var DEMO_WAITING_STUDENTS = [
-    { id: 'st-1', full_name: 'Ananya Gupta', technology: 'Tally ERP', grade: 'A+', priority: 'high' },
-    { id: 'st-2', full_name: 'Rohit Nair', technology: 'GST Filing', grade: 'A', priority: 'high' },
-    { id: 'st-3', full_name: 'Divya Sharma', technology: 'Excel & MIS', grade: 'A', priority: 'medium' },
-    { id: 'st-4', full_name: 'Karthik Rao', technology: 'SAP FICO', grade: 'B+', priority: 'high' },
-    { id: 'st-5', full_name: 'Meera Joshi', technology: 'Financial Reporting', grade: 'A+', priority: 'medium' },
-    { id: 'st-6', full_name: 'Sandeep Kumar', technology: 'Income Tax', grade: 'B', priority: 'low' },
-    { id: 'st-7', full_name: 'Pooja Iyer', technology: 'QuickBooks', grade: 'A', priority: 'medium' },
-  ];
+  var JOBS_CACHE = [];
+  var WAITING_STUDENTS_CACHE = [];
 
   function getJobTypeLabel(type) {
     var map = { full_time: 'Full-time', part_time: 'Part-time', internship: 'Internship', contract: 'Contract' };
@@ -244,8 +175,8 @@
     }
   }
 
-  var allJobs = DEMO_JOBS.slice();
-  var allWaitingStudents = DEMO_WAITING_STUDENTS.slice();
+  var allJobs = JOBS_CACHE.slice();
+  var allWaitingStudents = WAITING_STUDENTS_CACHE.slice();
 
   function loadJobs() {
     if (jobsEmptyEl) jobsEmptyEl.classList.add('d-none');
@@ -261,7 +192,7 @@
         renderList(filterJobs(allJobs, jobSearchEl ? jobSearchEl.value : ''));
       })
       .catch(function () {
-        allJobs = DEMO_JOBS.slice();
+        allJobs = [];
         renderList(filterJobs(allJobs, jobSearchEl ? jobSearchEl.value : ''));
       });
   }
